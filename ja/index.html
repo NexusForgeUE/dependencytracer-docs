@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="site-root" content="../">
+  <meta name="description" content="Dependency Tracer をインストールし、未使用の Unreal Engine アセットを確認し、ハード参照とソフト参照をたどり、アセットのサイズと Blueprint の移行準備レポートを調べます。">
+  <title>Dependency Tracer ドキュメント | Unreal Engine</title>
+  <link rel="canonical" href="https://nexusforgeue.github.io/dependencytracer-docs/ja/">
+  <link rel="alternate" hreflang="en" href="https://nexusforgeue.github.io/dependencytracer-docs/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://nexusforgeue.github.io/dependencytracer-docs/zh-Hans/">
+  <link rel="alternate" hreflang="ru" href="https://nexusforgeue.github.io/dependencytracer-docs/ru/">
+  <link rel="alternate" hreflang="es" href="https://nexusforgeue.github.io/dependencytracer-docs/es/">
+  <link rel="alternate" hreflang="pt-BR" href="https://nexusforgeue.github.io/dependencytracer-docs/pt-BR/">
+  <link rel="alternate" hreflang="de" href="https://nexusforgeue.github.io/dependencytracer-docs/de/">
+  <link rel="alternate" hreflang="ja" href="https://nexusforgeue.github.io/dependencytracer-docs/ja/">
+  <link rel="alternate" hreflang="fr" href="https://nexusforgeue.github.io/dependencytracer-docs/fr/">
+  <link rel="alternate" hreflang="ko" href="https://nexusforgeue.github.io/dependencytracer-docs/ko/">
+  <link rel="alternate" hreflang="x-default" href="https://nexusforgeue.github.io/dependencytracer-docs/">
+  <link rel="icon" type="image/svg+xml" href="../assets/dependencytracer.svg">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/app.js" defer></script>
+</head>
+<body data-search-one="{count} 件の章が見つかりました。" data-search-many="{count} 件の章が見つかりました。" data-search-empty="該当する章がありません。検索語を短くしてみてください。">
+  <a class="skip-link" href="#main">ドキュメントへ移動</a>
+  <header class="site-header">
+    <a class="brand" href="#overview" aria-label="Dependency Tracer ドキュメントのホーム"><img src="../assets/dependencytracer.svg" alt="" width="38" height="38"><span>Dependency Tracer</span></a>
+    <span class="header-label">ドキュメント</span>
+    <div class="header-actions"><label class="language-picker"><span class="visually-hidden">ドキュメントの言語</span><select id="doc-locale" aria-label="ドキュメントの言語"><option value="en">English</option><option value="zh-Hans">简体中文</option><option value="ru">Русский</option><option value="es">Español</option><option value="pt-BR">Português (Brasil)</option><option value="de">Deutsch</option><option value="ja" selected>日本語</option><option value="fr">Français</option><option value="ko">한국어</option></select></label><span class="version">1.1.0</span><button class="print-button" type="button" id="print-guide">ガイドを印刷</button><button class="menu-button" type="button" id="menu-toggle" aria-controls="sidebar" aria-expanded="false">メニュー</button></div>
+  </header>
+  <div class="site-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="search-box"><label for="doc-search">このガイドを検索</label><input id="doc-search" type="search" placeholder="例：ソフト参照、エクスポート" autocomplete="off" aria-controls="search-results"><div id="search-results" class="search-results" hidden></div><p class="visually-hidden" id="search-status" role="status"></p></div>
+      <nav aria-label="ドキュメントの章">
+        <p class="nav-heading">はじめに</p>
+        <a href="#overview" aria-current="location">概要</a><a href="#installation">インストール</a><a href="#quick-start">初めてのスキャン</a><a href="#scope">スキャン範囲とルート</a>
+        <p class="nav-heading">プロジェクトを調べる</p>
+        <a href="#project-overview">プロジェクト概要</a><a href="#unused-assets">未使用アセット</a><a href="#build-size">ビルドサイズ</a><a href="#dependency-tree">依存関係ツリー</a>
+        <p class="nav-heading">移行の準備</p>
+        <a href="#migration-audit">移行監査</a><a href="#audit-rules">監査ルール一覧</a>
+        <p class="nav-heading">リファレンス</p>
+        <a href="#settings">設定</a><a href="#exports">CSV と JSON のエクスポート</a><a href="#troubleshooting">トラブルシューティング</a><a href="#faq">よくある質問</a><a href="#version">バージョンとサポート</a>
+      </nav>
+      <div class="sidebar-footer">Unreal Engine 5.5 / 5.6 / 5.7 / 5.8<br>Windows 64 ビット</div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <section class="doc-section overview" id="overview" aria-labelledby="overview-title" data-search="はじめに 紹介 アセット 最適化 依存関係 移行 サイズ Blueprint">
+        <p class="eyebrow">Dependency Tracer 1.1.0 ユーザーガイド</p>
+        <h1 id="overview-title">サイズをたどる。<br>つながりを理解する。</h1>
+        <p class="lead">詳しく確認すべきアセットを見つけ、プロジェクトとのつながりを把握し、エンジンのアップグレードに向けて Blueprint 層を整えます。</p>
+        <div class="intro-actions"><a class="primary-link" href="#quick-start">初めてのスキャンを実行</a><a class="secondary-link" href="#installation">Dependency Tracer をインストール</a><a class="secondary-link" href="https://www.fab.com/listings/be0472f5-6168-438f-9bc7-d650cd8481aa">Fab で見る</a></div>
+        <div class="workflow" aria-label="調査の 4 つのステップ"><span><b>1</b> 範囲を選ぶ</span><span><b>2</b> スキャンする</span><span><b>3</b> 調べる</span><span><b>4</b> エクスポートして確認</span></div>
+        <figure class="screenshot hero-figure"><a href="../assets/screens/dependency-tree.png" target="_blank" rel="noopener" aria-label="依存関係マップのスクリーンショットを原寸で開く"><img src="../assets/screens/dependency-tree.png" width="1920" height="1080" alt="Dependency Tracer の実際の依存関係マップ。真鍮色のハード参照の枝、破線のソフト参照経路、選択したアセットのインスペクタが表示されています。"></a><figcaption>デモプロジェクトで撮影した Unreal Editor のネイティブ UI です。各スクリーンショットをクリックすると、原寸で確認できます。</figcaption></figure>
+        <h2>調べたい内容を選ぶ</h2>
+        <div class="method-cards"><a href="#unused-assets"><h3>未使用コンテンツを確認する</h3><p>孤立したアセットや依存関係の島を見つけ、整理する前に確認します。</p><span>未使用アセット</span></a><a href="#build-size"><h3>サイズの大きい依存先を探す</h3><p>ルートの占有サイズから、その背後のテクスチャ、メッシュ、その他のアセットをたどります。</p><span>ビルドサイズと依存関係ツリー</span></a><a href="#migration-audit"><h3>Blueprint を整える</h3><p>根拠と次の対応を確認しながら、構造上の検出事項を検討します。</p><span>移行準備レポート</span></a></div>
+        <div class="intro-note"><strong>結果は確認待ちの一覧として扱ってください。</strong> パッケージサイズは保存済みアセットに基づく推定値で、未使用の項目は候補です。移行レポートは構造の監査です。根拠から変更内容を判断し、その後プロジェクトをテストしてください。</div>
+      </section>
+      <section class="doc-section" id="installation" aria-labelledby="installation-title" data-search="インストール Fab Launcher ZIP ソース コンパイラ ビルド モジュール不足 有効化 Windows Plugins バージョン">
+        <h2 id="installation-title">インストール</h2>
+        <p>Dependency Tracer 1.1.0 は、Windows 64 ビットの Unreal Engine 5.5、5.6、5.7、5.8 に対応しています。お使いのエンジンのマイナーバージョンに合ったパッケージをインストールしてください。</p>
+        <h3>Fab からインストールする</h3>
+        <ol class="steps"><li>Epic Games Launcher の Fab ライブラリで Dependency Tracer を探し、対応するエンジンにインストールします。</li><li>プロジェクトを開きます。<strong>Edit &gt; Plugins</strong> で <strong>Dependency Tracer</strong> を検索し、必要に応じて有効にします。</li><li>エディタを再起動し、<strong>Tools &gt; Dependency Tracer</strong> を開きます。</li></ol>
+        <h3>ソースから手動でインストールする</h3>
+        <ol class="steps"><li>Unreal Editor を閉じます。プラグインのインストールは 1 つだけ残してください。プロジェクト内の古いコピーが、エンジン側のインストールより優先されることがあります。</li><li>アーカイブ内の <code>DependencyTracer</code> フォルダを、プロジェクトの <code>Plugins</code> ディレクトリに配置します。ディスクリプタは、以下に示すパスに置く必要があります。</li><li>ソースパッケージには、使用中のエンジンの正確なバージョンでサポートされる C++ ビルドツールが必要です。プロジェクトのエディタターゲットをビルドするか、Unreal の <code>BuildPlugin</code> ツールでプラグインをビルドしてからインストールします。</li><li>プロジェクトを開き、必要に応じて <strong>Dependency Tracer</strong> を有効にします。再起動して <strong>Tools &gt; Dependency Tracer</strong> を開きます。</li></ol>
+        <pre><code>YourProject/
+  YourProject.uproject
+  Plugins/
+    DependencyTracer/
+      DependencyTracer.uplugin
+      Config/
+      Resources/
+      Source/</code></pre>
+        <p class="small">提出用のソースアーカイブと、処理済みの Fab インストールパッケージは、配布工程が異なります。ソースアーカイブを手動でインストールすると、コンパイルを求められる場合があります。あるエンジンのマイナーバージョン向けにビルドした DLL は、別のマイナーバージョンでは再利用できません。</p>
+      </section>
+      <section class="doc-section" id="quick-start" aria-labelledby="quick-start-title" data-search="チュートリアル 初回 スキャン Scan project アセット 保存 選択 検査 監査 整理">
+        <h2 id="quick-start-title">初めてのスキャン</h2>
+        <p>まずはプロジェクトのよく知っている部分から始めます。変更したアセットを先に保存し、ディスク上のパッケージサイズが最新の保存状態を反映するようにします。ワークベンチは最初に <strong>Dependency Tree</strong> を開きます。スキャン後に <strong>Overview</strong> へ切り替えてください。このガイドでは、プラグインの UI と照合できるようにボタン名を英語のまま記載しています。</p>
+        <ol class="steps"><li><strong>スキャンするコンテンツを選びます。</strong> <strong>Project Settings &gt; Plugins &gt; Dependency Tracer</strong> を開きます。プロジェクト全体なら <strong>Analysis Roots</strong> を <code>/Game</code> のままにするか、<code>/Game/Characters</code> などの小さなフォルダを選びます。</li><li><strong>プロジェクトをスキャンします。</strong> <strong>Tools &gt; Dependency Tracer</strong> を開き、<strong>Scan project</strong> をクリックして、完了を待ちます。任意の Blueprint 監査は、<strong>Scan + audit</strong> または <strong>Run Blueprint Audit</strong> を選ぶと実行されます。</li><li><strong>まず Overview を確認します。</strong> スキャンしたアセット数、コンテンツサイズ、アセットの種類、占有サイズが大きいルートを確認します。</li><li><strong>サイズの大きいアセットをたどります。</strong> <strong>Dependency Tree</strong> を開き、<strong>Find asset</strong> で選ぶか、コンテンツブラウザでアセットを選択して <strong>Use selected</strong> をクリックします。カードを選ぶと、サイズと参照を確認できます。</li><li><strong>候補を確認します。</strong> <strong>Unused Assets</strong> を開きます。変更する前に、<strong>Browse</strong> と <strong>Open</strong> でアセットの用途を確認します。</li><li><strong>結果を記録します。</strong> アップグレードの準備では <strong>Migration Audit</strong> を実行し、確認用に CSV または JSON をエクスポートします。</li></ol>
+        <p>アセットや設定を変更したら、再度スキャンしてください。マップのスナップショットが以前のスキャンに基づくと表示されたら、<strong>Reload map</strong> を使います。</p>
+      </section>
+      <section class="doc-section" id="scope" aria-labelledby="scope-title" data-search="範囲 Analysis Roots Excluded Folders Additional Root Folders 動的 読み込み マップ クック パッケージ化 プライマリアセット ルート プラグイン エンジン コンテンツ">
+        <h2 id="scope-title">スキャン範囲とルート</h2>
+        <p><strong>範囲</strong>は、調査するアセットの集合です。<strong>ルート</strong>は、使用中とみなす起点のアセットです。未使用コンテンツの分析では、ルートからハード参照またはソフト参照で到達できるアセットを保持します。</p>
+        <ul><li><strong>Analysis Roots:</strong> 分析に含めるコンテンツパスです。既定値は <code>/Game</code> です。</li><li><strong>Excluded Folders:</strong> 分析から除外するパスです。含めたフォルダの内部にあっても除外されます。</li><li><strong>Additional Root Folders:</strong> 内部のアセットを使用中とみなすフォルダです。ゲームが動的に読み込むコンテンツも含めます。</li><li><strong>Include Plugin Content / Include Engine Content:</strong> 必要に応じて範囲を広げる設定です。どちらも既定ではオフです。</li></ul>
+        <p><code>/Game/Characters</code> などの Unreal パッケージパスを使用してください。Windows のフォルダパスは使えません。対応するマップ、パッケージ化、アセット管理の設定からもルートが取得されます。範囲内のすべてのマップはルートとして扱います。パッケージ化の設定で <strong>Cook All</strong> が有効なら、範囲内の全アセットを使用中とみなすため、未使用一覧が空になることがあります。</p>
+        <p><strong>Additional Root Folders</strong> は保持対象のルートを追加しますが、スキャン範囲は広げません。フォルダ内のコンテンツをすべて分析する場合は、そのフォルダを <strong>Analysis Roots</strong> にも含めてください。</p>
+        <div class="callout"><strong>動的なコンテンツは明示してください。</strong> C++ で組み立てるパス、ファイルから読み取る文字列、外部の実行時システムは、アセットレジストリの参照に現れない場合があります。該当フォルダを <strong>Additional Root Folders</strong> に追加し、ゲームの読み込み経路を確認してください。</div>
+        <p>スキャナは、範囲外からの参照も含め、アセットレジストリ全体で孤立した候補を再確認します。これにより確度は高まりますが、実行時の動的な参照をすべて検出できるわけではありません。</p>
+      </section>
+      <section class="doc-section" id="project-overview" aria-labelledby="project-overview-title" data-search="Overview 概要 合計 スキャン コンテンツ サイズ 種類 最大 ルート スキップ リダイレクタ パッケージ">
+        <h2 id="project-overview-title">プロジェクト概要</h2>
+        <p><strong>Overview</strong> は、直近で完了したスキャンをまとめます。まずここで、注目すべきアセットの種類やルートを選びます。</p>
+        <ul><li><strong>Scanned content:</strong> 設定した範囲内の、既知のディスク上のパッケージサイズと、アセット数、スキップ数です。</li><li><strong>Size by asset type:</strong> スキャンで確認できた総バイト数に占める割合で、サイズの大きいアセットの種類を示します。</li><li><strong>Largest root footprints:</strong> ハード参照で到達できる依存先全体の占有サイズが大きいルートです。</li><li><strong>Unused summary:</strong> 候補数、手動確認が必要な件数、回収可能サイズです。回収可能サイズには、最終的に <strong>Safe to delete</strong> に分類された候補の既知サイズだけを合計します。</li></ul>
+        <figure class="screenshot"><a href="../assets/screens/overview.png" target="_blank" rel="noopener"><img src="../assets/screens/overview.png" width="1920" height="1080" alt="スキャンしたパッケージサイズ、アセットの種類、占有サイズの大きいルートを表示する概要画面。" loading="lazy"></a><figcaption>デモプロジェクトのサンプルデータです。回収可能サイズは確認すべき候補のサイズであり、すでに削除した量ではありません。</figcaption></figure>
+        <p>サイズが不明なパッケージは、既知サイズの合計から除外されます。これらの数値はスキャン範囲を表し、プロジェクトフォルダ全体のサイズではありません。</p>
+      </section>
+      <section class="doc-section" id="unused-assets" aria-labelledby="unused-assets-title" data-search="Unused Assets Safe to delete Review manually 未使用アセット 確度 削除 整理 孤立 島 参照元 動的参照">
+        <h2 id="unused-assets-title">未使用アセット</h2>
+        <p>検出した使用中のルートから到達できないアセットを確認します。各項目には、アセットの種類、既知の直接サイズ、確度、参照元の数が表示されます。</p>
+        <div class="table-scroll"><table><caption>未使用アセットの確度</caption><thead><tr><th>フィルタ</th><th>意味</th><th>確認方法</th></tr></thead><tbody><tr><td><strong>Safe to delete</strong></td><td>レジストリでの確認後も参照元が検出されなかった、孤立した候補です。</td><td>Unreal の通常のアセットツールで削除する前に、用途と動的な使用の有無を確認します。</td></tr><tr><td><strong>Review manually</strong></td><td>さらに確認が必要なアセットです。たとえば、依存関係の島から参照されている場合や、そのクラスが保護対象の場合です。</td><td>関連アセットと読み込みコードを調べます。依存関係の島は、まとまり全体で確認してください。</td></tr></tbody></table></div>
+        <figure class="screenshot"><a href="../assets/screens/unused-assets.png" target="_blank" rel="noopener"><img src="../assets/screens/unused-assets.png" width="1920" height="1080" alt="未使用アセットの一覧。候補のサイズ、確度、参照元と、場所の表示、開く、パスのコピーの操作が表示されています。" loading="lazy"></a><figcaption>確度で一覧を絞り込み、クリーンアップの前に候補を確認します。</figcaption></figure>
+        <p><strong>Browse</strong> でアセットの場所を表示し、<strong>Open</strong> で調べ、<strong>Copy path</strong> でパッケージパスを共有します。<strong>Keep Asset Classes</strong> は、指定したクラスが <strong>Safe to delete</strong> に分類されることを防ぎます。</p>
+        <p>このタブは確認用の一覧を表示し、アセットを自動で削除しません。手動で整理した後は、影響を受けるマップと読み込み経路をテストし、再度スキャンしてください。</p>
+      </section>
+      <section class="doc-section" id="build-size" aria-labelledby="build-size-title" data-search="Build Size Top roots By type ビルドサイズ ルート 種類別 依存先込み 直接 共有 テクスチャ メッシュ バイト クック 圧縮 パッケージ化 推定">
+        <h2 id="build-size-title">ビルドサイズ</h2>
+        <p><strong>Top roots</strong> で、ハード参照の依存先を含む占有サイズが大きいルートを調べます。<strong>By type</strong> では、既知のパッケージ容量を多く占めるアセットの種類を確認します。</p>
+        <figure class="screenshot"><a href="../assets/screens/build-size.png" target="_blank" rel="noopener"><img src="../assets/screens/build-size.png" width="1920" height="1080" alt="ルートと、依存先を含むサイズ、割合、アセットの操作を表示するビルドサイズ画面。" loading="lazy"></a><figcaption>依存先を含むサイズから、ルートの占有サイズを構成する依存関係の連鎖を見つけられます。</figcaption></figure>
+        <div class="table-scroll"><table><caption>アセットの直接サイズと依存先を含むサイズ</caption><thead><tr><th>値</th><th>意味</th></tr></thead><tbody><tr><td>直接サイズ</td><td>そのアセット自身の保存済みパッケージの既知サイズです。</td></tr><tr><td>ハード依存先を含むサイズ</td><td>ルート自身のパッケージと、ハード参照で到達できる依存先の合計です。そのルートの占有サイズ内では、各パッケージを 1 回だけ数えます。</td></tr><tr><td>共有する依存先</td><td>同じパッケージが複数のルートの占有サイズに含まれることがあります。それらを合計すると、共有アセットを重複して数えます。</td></tr><tr><td>不明または不完全なサイズ</td><td>報告される既知の値は下限にとどまる場合があります。≥ マークは、計算が不完全であることを示します。</td></tr></tbody></table></div>
+        <p>サイズはまずアセットレジストリのパッケージサイズから取得し、取得できない場合は保存済みパッケージファイルのファイルシステム上のサイズを使います。これらはビルドの重さを推測する目安です。クック、圧縮、対象プラットフォーム、パッケージ化の設定により、配布サイズは変わります。実際の配布サイズが必要な場合は、クック済みビルドを測定してください。</p>
+      </section>
+      <section class="doc-section" id="dependency-tree" aria-labelledby="dependency-tree-title" data-search="Dependency Tree 依存関係ツリー マップ グラフ インスペクタ ハード参照 ソフト参照 参照元 矢印 拡大 縮小 平行移動 キーボード 選択 Find asset Fit to view Load map Reload map Tree view">
+        <h2 id="dependency-tree-title">依存関係ツリー</h2>
+        <ol class="steps"><li><strong>Find asset</strong> でルートを選ぶか、コンテンツブラウザでアセットを選択して <strong>Use selected</strong> をクリックします。パッケージパスを入力して <strong>Load map</strong> をクリックすることもできます。</li><li><strong>Dependencies</strong> を選ぶと、そのアセットが参照する依存先をたどれます。<strong>Referencers</strong> を選ぶと、そのアセットを参照する参照元を調べられます。</li><li><strong>Hard + Soft</strong>、<strong>Hard only</strong>、<strong>Soft only</strong> でマップを絞り込みます。</li><li>カードを選択します。右側のインスペクタで、直接サイズ、依存先を含むサイズ、参照数、表示中の依存先のサイズ比率、記録された移行監査の検出事項を確認します。</li><li><strong>Open Blueprint</strong> または <strong>Open asset</strong>、<strong>Show in browser</strong>、<strong>Copy path</strong>、<strong>Focus asset</strong> を使って調査を続けます。</li></ol>
+        <h3>線の意味を読み取る</h3>
+        <p><strong>真鍮色の実線</strong>はハード参照、<strong>青灰色の破線</strong>はソフト参照です。依存先と参照元のどちらの表示でも、矢印は実際の参照方向を示します。点は共有する分岐を表します。交差部分の破線の切れ目は接続点ではありません。</p>
+        <p>ソフト参照を使うと直接のハード依存を避けられますが、ソフト参照で読み込むアセットも実行時に必要な場合があります。表示される依存先を含むサイズとサイズ内訳は、ハード依存を対象としています。</p>
+        <h3>マップを操作する</h3>
+        <div class="table-scroll"><table><caption>依存関係マップの操作</caption><thead><tr><th>操作方法</th><th>動作</th></tr></thead><tbody><tr><td>マウスホイール / + / −</td><td>マップを拡大・縮小します。</td></tr><tr><td>マウスの中ボタンまたは右ボタンでドラッグ</td><td>表示を平行移動します。</td></tr><tr><td><strong>Fit to view</strong> / Home</td><td>表示中のマップが収まるように調整します。</td></tr><tr><td>左 / 右矢印キー</td><td>別のノードを選択します。</td></tr><tr><td>Enter / ダブルクリック</td><td>選択中のアセットを中心に表示します。</td></tr><tr><td><strong>Tree view / Map view</strong></td><td>グラフ表示と、必要なときに枝を展開するツリー表示を切り替えます。</td></tr><tr><td><strong>Reload map</strong></td><td>再スキャンの完了後にスナップショットを更新します。</td></tr></tbody></table></div>
+        <p>局所マップには、32 ノード、96 リンク、深さ 3、展開ごとに 6 子ノードという上限があり、処理量にも制限があります。状態表示で打ち切りや省略されたリンクを確認し、別のアセットにフォーカスして続きを調べます。深さと子ノード数の設定は <strong>Tree view</strong> に適用され、このマップの上限は変わりません。インスペクタのサイズバーは表示中のハード依存の内訳を表し、プロジェクト内の全アセットを表すものではありません。</p>
+      </section>
+      <section class="doc-section" id="migration-audit" aria-labelledby="migration-audit-title" data-search="Migration Audit Migration Readiness Report Blueprint アップグレード エンジン 移行監査 阻害要因 警告 情報 カバレッジ 検査 コンパイル 保存 提供元 しきい値">
+        <h2 id="migration-audit-title">移行監査</h2>
+        <p><strong>Migration Readiness Report</strong> は Dependency Tracer 1.1.0 に含まれています。エンジン移行前に Blueprint の構造を整えるためのレポートです。</p>
+        <ol class="steps"><li>調べたい Blueprint 層に合わせて、分析ルートと除外項目を設定します。</li><li><strong>Migration Audit</strong> を開きます。<strong>Run Blueprint Audit</strong> をクリックするか、ヘッダーの <strong>Scan + audit</strong> を使います。</li><li>検査済み数と検出された Blueprint 数、検査の失敗を確認します。まず <strong>Blockers</strong> を確認し、次に <strong>Warnings</strong> と <strong>Info</strong> を確認します。</li><li>検出事項を選び、根拠、安定したルール ID、Blueprint の構造、推奨される次の対応を読みます。<strong>Open Blueprint</strong> または <strong>Show in Content Browser</strong> で確認します。</li><li>結果をエクスポートし、プロジェクトに適した変更を行います。手動でコンパイルとテストを実施してから、監査を再実行します。</li></ol>
+        <figure class="screenshot"><a href="../assets/screens/migration-audit.png" target="_blank" rel="noopener"><img src="../assets/screens/migration-audit.png" width="1920" height="1080" alt="Blueprint のカバレッジ、重大度フィルタ、検出事項、根拠、推奨される次の対応を表示する移行準備レポート。" loading="lazy"></a><figcaption>各検出事項には、根拠と次の対応が示されます。デモプロジェクトには、このレポート向けに意図的な構造の事例を用意しています。</figcaption></figure>
+        <h3>まず検査のカバレッジを確認する</h3>
+        <ul><li><strong>No Blueprint audit:</strong> 前回の通常スキャンには、任意の監査が含まれていません。</li><li><strong>No Blueprints in scope:</strong> 想定外の場合は、設定したルートと除外項目を確認してください。</li><li><strong>Inspection failures:</strong> 一部のアセットを読み取れなかったため、レポートのカバレッジは部分的です。</li><li><strong>Completed:</strong> 予定された検査と分析が完了しました。移行先エンジンとの互換性を証明するものではありません。</li></ul>
+        <p>Blueprint 検査は明示的に選択して実行し、範囲内のアセットをメモリに読み込みます。現在の読み込み済みコンパイル状態を参照し、コンパイル、親クラスの変更、再構築、削除、明示的な保存は実行しません。エンジンの読み込みによってメモリ上の状態が変わる場合がありますが、監査はその状態をひそかに保存したり、既存の未保存フラグを解除したりしません。</p>
+        <div class="callout"><strong>プロジェクトのコピーで実際のエンジン移行をテストしてください。</strong> このレポートは現在の構造上の問題と確認事項を見つけます。新しいエンジンの API 変更、シリアライズの変更、C++ の動作、動的に読み込む参照は、移行先バージョンで引き続きテストする必要があります。</div>
+      </section>
+      <section class="doc-section" id="audit-rules" aria-labelledby="audit-rules-title" data-search="ルール ID BP_LOAD_FAILED BP_MISSING_PARENT BP_COMPILE_ERROR BP_NEEDS_COMPILE BP_COMPILE_WARNINGS BP_DEPRECATED_NODES BP_ORPHANED_PINS BP_HIGH_COUPLING BP_LARGE_GRAPH BP_DEEP_INHERITANCE BP_PLUGIN_DEPENDENCY BP_HARD_CYCLE">
+        <h2 id="audit-rules-title">監査ルール一覧</h2>
+        <p><strong>Blockers</strong> は、現在の問題や準備監査の抜けを示します。<strong>Warnings</strong> には、確認すべき構造上の目安が含まれます。<strong>Info</strong> は、移行先エンジンで確認すべき提供元を示します。</p>
+        <div class="table-scroll"><table><caption>バージョン 1.1.0 の移行監査ルール</caption><thead><tr><th>ルール ID</th><th>重大度</th><th>報告内容</th></tr></thead><tbody>
+          <tr><td><code class="rule-id">BP_LOAD_FAILED</code></td><td><strong>Blocker</strong>（阻害要因）</td><td>Blueprint を検査できませんでした。アセットまたは提供元を復旧して再実行してください。</td></tr>
+          <tr><td><code class="rule-id">BP_MISSING_PARENT</code></td><td><strong>Blocker</strong>（阻害要因）</td><td>親クラスが必要な Blueprint の読み込み済み状態に、親クラスがありません。</td></tr>
+          <tr><td><code class="rule-id">BP_COMPILE_ERROR</code></td><td><strong>Blocker</strong>（阻害要因）</td><td>現在の読み込み済みコンパイル状態がエラーを示しています。</td></tr>
+          <tr><td><code class="rule-id">BP_NEEDS_COMPILE</code></td><td><strong>Warning</strong>（警告）</td><td>現在の状態がダーティ、未確認、または作成中です。手動でコンパイルしてください。</td></tr>
+          <tr><td><code class="rule-id">BP_COMPILE_WARNINGS</code></td><td><strong>Warning</strong>（警告）</td><td>現在の読み込み済み状態がコンパイラの警告を示しています。</td></tr>
+          <tr><td><code class="rule-id">BP_DEPRECATED_NODES</code></td><td><strong>Warning</strong>（警告）</td><td>非推奨のノード、呼び出し、型参照を検出しました。</td></tr>
+          <tr><td><code class="rule-id">BP_ORPHANED_PINS</code></td><td><strong>Warning</strong>（警告）</td><td>現在のシグネチャと照合すべき孤立ピンがあります。</td></tr>
+          <tr><td><code class="rule-id">BP_HIGH_COUPLING</code></td><td><strong>Warning</strong>（警告）</td><td>既定では、Blueprint への直接ハード依存が 20 以上ある場合です。</td></tr>
+          <tr><td><code class="rule-id">BP_LARGE_GRAPH</code></td><td><strong>Warning</strong>（警告）</td><td>既定では、1 つのグラフにコメント以外のノードが 500 以上ある場合です。</td></tr>
+          <tr><td><code class="rule-id">BP_DEEP_INHERITANCE</code></td><td><strong>Warning</strong>（警告）</td><td>既定では、Blueprint の祖先クラスが 5 以上ある場合です。</td></tr>
+          <tr><td><code class="rule-id">BP_PLUGIN_DEPENDENCY</code></td><td><strong>Info</strong>（情報）</td><td>確認が必要なプラグインコンテンツ、またはネイティブのプラグイン提供元があります。</td></tr>
+          <tr><td><code class="rule-id">BP_HARD_CYCLE</code></td><td><strong>Warning</strong>（警告）</td><td>範囲内の Blueprint 間に、自己循環を含むハード参照の循環があります。</td></tr>
+        </tbody></table></div>
+        <p>結合度では自己参照を除外します。結合度と循環の確認は、監査範囲内の Blueprint 間の直接ハードリンクを使用します。ソフトリンク、範囲外の Blueprint、他のアセットの種類を経由するリンクは対象外です。ネイティブクラスは Blueprint の祖先として数えません。プラグインの提供元の確認では、ネイティブの親クラスと呼び出しも調べます。</p>
+        <p>しきい値は確認を促す目安であり、互換性の限界ではありません。設計に合わせてプロジェクト設定で既定値を変更してください。エクスポートには、実際に使った値が記録されます。</p>
+      </section>
+      <section class="doc-section" id="settings" aria-labelledby="settings-title" data-search="設定 既定値 範囲 パス 除外 保持 クラス 処理時間 6 ミリ秒 12 深さ 5000 子ノード 20 500 5 しきい値 Report Export Dir 構成">
+        <h2 id="settings-title">設定</h2>
+        <p><strong>Project Settings &gt; Plugins &gt; Dependency Tracer</strong> を開きます。設定はプロジェクトに属します。分析設定を変更したら再度スキャンしてください。</p>
+        <div class="table-scroll"><table><caption>Dependency Tracer の設定</caption><thead><tr><th>設定項目</th><th>既定値</th><th>目的</th></tr></thead><tbody>
+          <tr><td><strong>Analysis Roots</strong></td><td><code>/Game</code></td><td>分析に含めるコンテンツパスです。</td></tr><tr><td><strong>Excluded Folders</strong></td><td>空</td><td>選択したパスを分析から除外します。</td></tr><tr><td><strong>Include Plugin Content</strong></td><td>オフ</td><td>分析範囲をプラグインコンテンツまで広げます。</td></tr><tr><td><strong>Include Engine Content</strong></td><td>オフ</td><td>分析範囲をエンジンコンテンツまで広げます。エンジンコンテンツは整理・削除の対象にしないでください。</td></tr><tr><td><strong>Additional Root Folders</strong></td><td>空</td><td>動的な読み込みパスも含め、コンテンツを使用中として扱います。</td></tr><tr><td><strong>Keep Asset Classes</strong></td><td>空</td><td>レジストリ上の正確なクラス名で、<strong>Safe to delete</strong> への分類を防ぎます。U 接頭辞は付けません。</td></tr><tr><td><strong>Max Tree Display Depth</strong></td><td>12</td><td>ツリーの表示深度を制限します。分析グラフ全体の深さは制限しません。</td></tr><tr><td><strong>Max Children Per Node</strong></td><td>5000</td><td>表示を打ち切るまでの、直接の子ノード数を制限します。</td></tr><tr><td><strong>Extract Budget Ms Per Tick</strong></td><td>6 ms</td><td>エディタの tick ごとに行うグラフ抽出の処理時間です。値を下げると応答性を優先できます。</td></tr><tr><td><strong>Migration Hard Dependency Threshold</strong></td><td>20</td><td>Blueprint への直接ハード依存の結合度を確認するしきい値です。</td></tr><tr><td><strong>Migration Graph Node Threshold</strong></td><td>500</td><td>1 つのグラフにある、コメント以外のノード数です。</td></tr><tr><td><strong>Migration Inheritance Depth Threshold</strong></td><td>5</td><td>Blueprint の祖先クラス数です。</td></tr><tr><td><strong>Report Export Dir</strong></td><td>空</td><td>空の場合は、プロジェクト内の <code>Saved/DependencyTracer/</code> を使用します。</td></tr>
+        </tbody></table></div>
+        <p>レポートディレクトリの相対パスは、プロジェクトフォルダを基準に解決します。コンテンツパスの設定には Unreal パッケージパスを使用します。スキャンをキャンセルした場合は、新しい範囲について判断する前にスキャンをやり直してください。</p>
+      </section>
+      <section class="doc-section" id="exports" aria-labelledby="exports-title" data-search="エクスポート CSV JSON レポート ファイル Saved スキーマ スプレッドシート カバレッジ メタデータ 移行 しきい値 クリップボード パス">
+        <h2 id="exports-title">CSV と JSON のエクスポート</h2>
+        <ol class="steps"><li>スキャンを完了させます。移行監査の検出事項を含めたい場合は、先に任意の Blueprint 監査を実行します。</li><li>ヘッダーの <strong>Export</strong>、または移行監査の <strong>Export CSV</strong> / <strong>Export JSON</strong> を使います。</li><li>UI に表示されるエクスポート先のパスを確認します。移行監査のエクスポート操作では、そのパスもクリップボードへコピーされます。</li><li><code>&lt;Project&gt;/Saved/DependencyTracer/</code>、または <strong>Report Export Dir</strong> で設定したディレクトリにファイルがあります。</li></ol>
+        <p>どちらの形式も、利用できる監査データを含むスキャンレポートをエクスポートします。監査のエクスポート対象は、現在の検索や重大度フィルタで表示されている行だけではありません。</p>
+        <ul><li><strong>CSV:</strong> スプレッドシートでレポートの各セクションを確認したり、レビュー用に共有したりできます。</li><li><strong>JSON:</strong> 比較や独自ツールでの利用に向けて、構造化されたスナップショットを保持できます。</li></ul>
+        <p>移行データには、カバレッジ、検出事項、Blueprint ごとの指標、実際に使用したしきい値が含まれます。CSV には複数のレポートセクションがあり、JSON はスキーマバージョン 1.0 を使用します。どちらも完全な依存関係グラフは含みません。同じ範囲と設定のレポートを比較してください。範囲の変更が、合計や検出事項の変化の理由となる場合があります。</p>
+        <p>その後に通常スキャンを行うと、監査結果は監査を無効にしたスキャン結果で置き換わります。キャンセルや失敗の場合は、前回完了したレポートを保持します。エディタを開き直したら、新たにスキャンしてください。</p>
+      </section>
+      <section class="doc-section" id="troubleshooting" aria-labelledby="troubleshooting-title" data-search="ヘルプ 不足 Tools 無効 空 スキャン パス誤り サイズ不明 古いスナップショット 読み込み失敗 監査なし エクスポート不可 コンパイルエラー モジュール">
+        <h2 id="troubleshooting-title">トラブルシューティング</h2>
+        <details class="qa"><summary>Tools に Dependency Tracer が表示されない</summary><p><strong>Edit &gt; Plugins</strong> でプラグインを有効にして再起動します。ディスクリプタが正しいプラグインフォルダの直下にあり、パッケージがエンジンのバージョンに合っているか確認してください。ソースからの手動インストールには、エンジンに対応する C++ ツールチェーンと、エディタターゲットのビルド成功が必要です。</p></details>
+        <details class="qa"><summary>スキャンが空、またはフォルダが含まれない</summary><p><strong>Analysis Roots</strong> と <strong>Excluded Folders</strong> を確認します。<code>/Game/Characters</code> などのパッケージパスを使ってください。調べたい範囲に必要ならプラグインコンテンツを有効にし、新たにスキャンします。</p></details>
+        <details class="qa"><summary>サイズが不明、または予想より小さい</summary><p>アセットを保存して再スキャンします。結果には、アセットレジストリで確認できるディスク上のパッケージサイズを使用します。未保存またはサイズ不明のものは除外される場合があり、走査が不完全なら下限値となる場合があります。クック後の出力は、保存済みパッケージのサイズと異なることがあります。</p></details>
+        <details class="qa"><summary>未使用候補が実際にはゲームで読み込まれる</summary><p>動的なパスと外部の読み込みシステムを確認します。関連フォルダを <strong>Additional Root Folders</strong> に追加し、再スキャンしてください。参照分析では、実行時の文字列による読み込みをすべて推測することはできません。</p></details>
+        <details class="qa"><summary>依存関係マップが古い結果を表示する</summary><p>新しいスキャンの完了を待ち、<strong>Reload map</strong> をクリックします。選択したルートとハード/ソフト参照のフィルタを確認してください。表示上限でリンクが省略される場合があります。別のノードにフォーカスして続きを調べます。</p></details>
+        <details class="qa"><summary>移行監査で監査未実行と表示される</summary><p>通常の <strong>Scan project</strong> は Blueprint のグラフを検査しません。<strong>Migration Audit</strong> を開き、<strong>Run Blueprint Audit</strong> または <strong>Scan + audit</strong> を使ってください。</p></details>
+        <details class="qa"><summary>Blueprint の検査が失敗した</summary><p>アセットを手動で開き、欠けている親クラス、提供元、パッケージの問題を確認します。解決してから監査を再実行してください。それまでは、カバレッジは部分的です。</p></details>
+        <details class="qa"><summary>検出事項が表示されない</summary><p>検索を解除し、すべての重大度フィルタを有効にします。検査済み数と検出数、範囲を確認してください。検出事項なしで監査が完了しても、現在のルールで何も見つからなかったという意味であり、将来のエンジン移行を保証するものではありません。</p></details>
+        <details class="qa"><summary>レポートをエクスポートできない</summary><p>分析の完了を待ちます。出力ディレクトリと書き込み権限を確認し、<strong>Window &gt; Developer Tools &gt; Output Log</strong> で Dependency Tracer のメッセージを読んでください。</p></details>
+        <details class="qa"><summary>Unreal がモジュールの不足や非互換を報告する</summary><p>エンジンのマイナーバージョンに正確に合うアーカイブを選び、プラグインの重複インストールを確認します。ソースパッケージは、互換性のある C++ ツールチェーンでビルドする必要があります。別のエンジンバージョンの DLL をインストール先に混在させないでください。</p></details>
+      </section>
+      <section class="doc-section" id="faq" aria-labelledby="faq-title" data-search="FAQ 質問 自動 削除 保存済みアセット ディスク GB 削減 クック 移行 保証 付属 オフライン インターネット 実行時 エディタ プラットフォーム デモ">
+        <h2 id="faq-title">よくある質問</h2>
+        <details class="qa"><summary>プラグインはアセットを削除・書き換えますか？</summary><p>未使用アセットのページは候補とエディタ内の移動操作を提供します。Blueprint 検査はアセットを読み込みますが、明示的にコンパイルや保存を行いません。変更と整理は、利用者が別途確認して実施する作業です。</p></details>
+        <details class="qa"><summary>表示された回収可能サイズ分の容量が必ず空きますか？</summary><p>表示値は、確認すべき候補の既知のパッケージサイズです。削除する前に用途を確認してください。依存関係、クック、圧縮によって、配布ビルドに実際に含まれる内容は変わります。</p></details>
+        <details class="qa"><summary>大きいルートのサイズを合計できますか？</summary><p>複数のルートは同じ依存先を共有することがあります。依存先を含むサイズを合計すると、共有パッケージを重複して数えます。別の観点から確認するには、種類別の合計や実測したビルドを使ってください。</p></details>
+        <details class="qa"><summary>検出事項がなければ移行の成功が保証されますか？</summary><p>いいえ。レポートは現在の Blueprint 構造と読み込み済み状態を確認します。実際の移行先エンジンでプロジェクトのコピーを検証し、C++ コード、提供元、コンテンツ、動作をテストしてください。</p></details>
+        <details class="qa"><summary>移行準備レポートは含まれていますか？</summary><p>はい。Dependency Tracer 1.1.0 には、従来の依存関係・サイズツールとともに含まれています。</p></details>
+        <details class="qa"><summary>パッケージ化したゲームに Dependency Tracer は必要ですか？</summary><p>プラグインのモジュールはエディタ専用です。調査用の UI は、パッケージ化したゲーム内では動作しません。</p></details>
+        <details class="qa"><summary>分析にオンラインサービスは必要ですか？</summary><p>プロジェクト分析は Unreal Editor 内でローカルに実行します。CSV と JSON のレポートは、選択したローカルディレクトリに書き込みます。</p></details>
+        <details class="qa"><summary>サンプルプロジェクトやスクリーンショットは自分のスキャンの一部ですか？</summary><p>スクリーンショットは、専用に作成したデモプロジェクトを示しています。実際のスキャンは、設定したプロジェクトのアセットを使用します。ガイドのサンプルサイズや検出事項は、プラグインに組み込んだ固定の結果ではありません。</p></details>
+      </section>
+      <section class="doc-section" id="version" aria-labelledby="version-title" data-search="バージョン 1.1.0 NexusForgeUE サポート 連絡 互換性 5.5 5.6 5.7 5.8 Windows 変更履歴">
+        <h2 id="version-title">バージョンとサポート</h2>
+        <p>このガイドは、<strong>Dependency Tracer 1.1.0</strong> と、<strong>Windows 64 ビットの Unreal Engine 5.5、5.6、5.7、5.8</strong> を対象としています。</p>
+        <h3>1.1.0 に含まれる機能</h3><p>依存関係カードとインスペクタを備えた Project Atlas UI、ハード/ソフト参照の経路、未使用コンテンツの調査、ルート別・種類別のサイズレポート、CSV/JSON エクスポート、Blueprint の移行準備レポートが含まれます。</p>
+        <p>エンジンの互換性は、Win64 上の UE 5.5.4、5.6.1、5.7.4、5.8.0 で確認しました。このリリースの検証環境では、Mac と Linux での実行は確認していません。</p>
+        <h3>問題を報告する</h3><p><a href="mailto:nexusforgeuesupport@gmail.com">nexusforgeuesupport@gmail.com</a> へお問い合わせください。</p><p>Unreal Engine とプラグインのバージョン、選択したタブ、スキャンのルートと除外項目、正確なメッセージ、再現手順を記載してください。グラフの問題では、ハード/ソフト参照フィルタと原寸のスクリーンショットを含めてください。監査の問題では、ルール ID とカバレッジを含めます。</p><p>レポートやログにはプロジェクトのアセットパスや名前が含まれる場合があるため、関係する部分だけを共有してください。</p>
+      </section>
+      <footer class="page-footer"><span>Dependency Tracer 1.1.0 · NexusForgeUE</span><a href="https://www.fab.com/listings/be0472f5-6168-438f-9bc7-d650cd8481aa">Fab の Dependency Tracer</a></footer>
+    </main>
+  </div>
+  <dialog id="image-viewer" class="image-viewer" aria-labelledby="image-title"><div class="image-toolbar"><span id="image-title">スクリーンショット</span><button type="button" id="image-size" aria-pressed="false">原寸</button><button type="button" id="image-close">画像を閉じる</button></div><div class="image-stage"><img id="large-image" alt=""></div></dialog>
+  <noscript><p class="noscript-note">すべての説明は JavaScript なしで閲覧できます。章へのリンクで移動してください。</p></noscript>
+</body>
+</html>
+

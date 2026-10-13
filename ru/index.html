@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="site-root" content="../">
+  <meta name="description" content="Установка Dependency Tracer, поиск неиспользуемых ассетов Unreal Engine, анализ hard/soft связей, размеров и подготовка Blueprint к миграции движка.">
+  <title>Документация Dependency Tracer | Unreal Engine</title>
+  <link rel="canonical" href="https://nexusforgeue.github.io/dependencytracer-docs/ru/">
+  <link rel="alternate" hreflang="en" href="https://nexusforgeue.github.io/dependencytracer-docs/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://nexusforgeue.github.io/dependencytracer-docs/zh-Hans/">
+  <link rel="alternate" hreflang="ru" href="https://nexusforgeue.github.io/dependencytracer-docs/ru/">
+  <link rel="alternate" hreflang="es" href="https://nexusforgeue.github.io/dependencytracer-docs/es/">
+  <link rel="alternate" hreflang="pt-BR" href="https://nexusforgeue.github.io/dependencytracer-docs/pt-BR/">
+  <link rel="alternate" hreflang="de" href="https://nexusforgeue.github.io/dependencytracer-docs/de/">
+  <link rel="alternate" hreflang="ja" href="https://nexusforgeue.github.io/dependencytracer-docs/ja/">
+  <link rel="alternate" hreflang="fr" href="https://nexusforgeue.github.io/dependencytracer-docs/fr/">
+  <link rel="alternate" hreflang="ko" href="https://nexusforgeue.github.io/dependencytracer-docs/ko/">
+  <link rel="alternate" hreflang="x-default" href="https://nexusforgeue.github.io/dependencytracer-docs/">
+  <link rel="icon" type="image/svg+xml" href="../assets/dependencytracer.svg">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/app.js" defer></script>
+</head>
+<body data-search-one="Найдена {count} глава." data-search-many="Найдено глав: {count}." data-search-empty="Главы не найдены. Попробуйте более короткий запрос.">
+  <a class="skip-link" href="#main">Перейти к документации</a>
+  <header class="site-header">
+    <a class="brand" href="#overview" aria-label="Главная страница документации Dependency Tracer"><img src="../assets/dependencytracer.svg" alt="" width="38" height="38"><span>Dependency Tracer</span></a>
+    <span class="header-label">Документация</span>
+    <div class="header-actions"><label class="language-picker"><span class="visually-hidden">Язык документации</span><select id="doc-locale" aria-label="Язык документации"><option value="en">English</option><option value="zh-Hans">简体中文</option><option value="ru" selected>Русский</option><option value="es">Español</option><option value="pt-BR">Português (Brasil)</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="fr">Français</option><option value="ko">한국어</option></select></label><span class="version">1.1.0</span><button class="print-button" type="button" id="print-guide">Печать</button><button class="menu-button" type="button" id="menu-toggle" aria-controls="sidebar" aria-expanded="false">Меню</button></div>
+  </header>
+  <div class="site-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="search-box"><label for="doc-search">Поиск по руководству</label><input id="doc-search" type="search" placeholder="Например: связи или экспорт" autocomplete="off" aria-controls="search-results"><div id="search-results" class="search-results" hidden></div><p class="visually-hidden" id="search-status" role="status"></p></div>
+      <nav aria-label="Главы документации">
+        <p class="nav-heading">Начало работы</p>
+        <a href="#overview" aria-current="location">Обзор</a><a href="#installation">Установка</a><a href="#quick-start">Первое сканирование</a><a href="#scope">Область анализа и корни</a>
+        <p class="nav-heading">Исследование проекта</p>
+        <a href="#project-overview">Обзор проекта</a><a href="#unused-assets">Неиспользуемые ассеты</a><a href="#build-size">Размеры и зависимости</a><a href="#dependency-tree">Карта зависимостей</a>
+        <p class="nav-heading">Подготовка к миграции</p>
+        <a href="#migration-audit">Аудит Blueprint</a><a href="#audit-rules">Справочник правил</a>
+        <p class="nav-heading">Справочная информация</p>
+        <a href="#settings">Настройки</a><a href="#exports">Экспорт CSV и JSON</a><a href="#troubleshooting">Решение проблем</a><a href="#faq">Частые вопросы</a><a href="#version">Версия и поддержка</a>
+      </nav>
+      <div class="sidebar-footer">Unreal Engine 5.5 / 5.6 / 5.7 / 5.8<br>Windows 64-bit</div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <section class="doc-section overview" id="overview" aria-labelledby="overview-title" data-search="начало работа введение ассеты оптимизация зависимости миграция размер Blueprint">
+        <p class="eyebrow">Руководство пользователя Dependency Tracer 1.1.0</p>
+        <h1 id="overview-title">Найдите тяжёлые ассеты.<br>Разберитесь в связях.</h1>
+        <p class="lead">Выделите контент, который стоит проверить, узнайте, что связывает его с проектом, и подготовьте структуру Blueprint к обновлению движка.</p>
+        <div class="intro-actions"><a class="primary-link" href="#quick-start">Запустить первое сканирование</a><a class="secondary-link" href="#installation">Установить Dependency Tracer</a><a class="secondary-link" href="https://www.fab.com/listings/be0472f5-6168-438f-9bc7-d650cd8481aa">Страница на Fab</a></div>
+        <div class="workflow" aria-label="Четыре этапа исследования"><span><b>1</b> Выберите область</span><span><b>2</b> Просканируйте</span><span><b>3</b> Изучите результаты</span><span><b>4</b> Экспортируйте и проверьте</span></div>
+        <figure class="screenshot hero-figure"><a href="../assets/screens/dependency-tree.png" target="_blank" rel="noopener" aria-label="Открыть снимок карты зависимостей в полном размере"><img src="../assets/screens/dependency-tree.png" width="1920" height="1080" alt="Настоящая карта Dependency Tracer: золотые hard-связи, пунктирная soft-связь и инспектор выбранного ассета."></a><figcaption>Интерфейс внутри Unreal Editor, снятый в демонстрационном проекте. Нажмите на любой снимок, чтобы рассмотреть его в полном размере.</figcaption></figure>
+        <h2>Выберите задачу для исследования</h2>
+        <div class="method-cards"><a href="#unused-assets"><h3>Проверить неиспользуемый контент</h3><p>Найдите изолированные ассеты и острова зависимостей, которые стоит изучить перед очисткой.</p><span>Unused Assets</span></a><a href="#build-size"><h3>Найти тяжёлые зависимости</h3><p>Проследите вклад корневого ассета до текстур, мешей и другого связанного контента.</p><span>Build Size и Dependency Tree</span></a><a href="#migration-audit"><h3>Подготовить Blueprint</h3><p>Изучите структурные замечания, их доказательства и рекомендуемые действия.</p><span>Migration Readiness Report</span></a></div>
+        <div class="intro-note"><strong>Результаты помогают выбрать, что проверять.</strong> Размеры оцениваются по сохранённым пакетам, неиспользуемые ассеты являются кандидатами, а отчёт миграции выполняет структурный аудит. Изучите доказательства, решите, что менять, и проверьте проект.</div>
+      </section>
+      <section class="doc-section" id="installation" aria-labelledby="installation-title" data-search="установка Fab Launcher ZIP исходники компилятор сборка модули включить Windows Plugins версия">
+        <h2 id="installation-title">Установка</h2>
+        <p>Dependency Tracer 1.1.0 поддерживает Unreal Engine 5.5, 5.6, 5.7 и 5.8 на Windows 64-bit. Выберите пакет для своей младшей версии движка.</p>
+        <h3>Установка через Fab</h3>
+        <ol class="steps"><li>Найдите Dependency Tracer в своей Fab Library в Epic Games Launcher и установите его для соответствующего движка.</li><li>Откройте проект. В <strong>Edit &gt; Plugins</strong> найдите <strong>Dependency Tracer</strong> и при необходимости включите его.</li><li>Перезапустите редактор и откройте <strong>Tools &gt; Dependency Tracer</strong>.</li></ol>
+        <h3>Ручная установка из исходников</h3>
+        <ol class="steps"><li>Закройте Unreal Editor. Оставьте одну установку плагина: старая копия в проекте может использоваться вместо установки в движке.</li><li>Поместите папку <code>DependencyTracer</code> из архива в каталог <code>Plugins</code> проекта. Дескриптор должен находиться по указанному ниже пути.</li><li>Пакету исходников нужны C++ инструменты сборки, поддерживаемые вашей точной версией движка. Соберите editor target проекта либо заранее соберите плагин инструментом Unreal <code>BuildPlugin</code>.</li><li>Откройте проект, при необходимости включите <strong>Dependency Tracer</strong>, перезапустите редактор и откройте <strong>Tools &gt; Dependency Tracer</strong>.</li></ol>
+        <pre><code>YourProject/
+  YourProject.uproject
+  Plugins/
+    DependencyTracer/
+      DependencyTracer.uplugin
+      Config/
+      Resources/
+      Source/</code></pre>
+        <p class="small">Архив исходников для подачи и обработанная установка через Fab относятся к разным этапам распространения. При ручной установке исходников может потребоваться компиляция; DLL одной младшей версии движка нельзя использовать в другой.</p>
+      </section>
+      <section class="doc-section" id="quick-start" aria-labelledby="quick-start-title" data-search="обучение первое сканирование Scan project сохранить выбрать ассет аудит очистка">
+        <h2 id="quick-start-title">Первое сканирование</h2>
+        <p>Начните со знакомой части проекта. Сохраните изменённые ассеты, чтобы размеры пакетов соответствовали их последнему сохранённому состоянию. Плагин сначала открывает Dependency Tree; после сканирования переключитесь на Overview. Названия кнопок в руководстве оставлены на английском, как в интерфейсе плагина.</p>
+        <ol class="steps"><li><strong>Выберите контент для анализа.</strong> Откройте <strong>Project Settings &gt; Plugins &gt; Dependency Tracer</strong>. Оставьте <strong>Analysis Roots</strong> равным <code>/Game</code> для всего проекта или выберите меньшую папку, например <code>/Game/Characters</code>.</li><li><strong>Просканируйте проект.</strong> Откройте <strong>Tools &gt; Dependency Tracer</strong> и нажмите <strong>Scan project</strong>. Дождитесь окончания. Дополнительный аудит Blueprint запускается через <strong>Scan + audit</strong> или <strong>Run Blueprint Audit</strong>.</li><li><strong>Начните с Overview.</strong> Проверьте количество ассетов, размеры контента, типы и крупнейшие корневые зависимости.</li><li><strong>Проследите тяжёлый ассет.</strong> В <strong>Dependency Tree</strong> выберите его через <strong>Find asset</strong> либо выделите в Content Browser и нажмите <strong>Use selected</strong>. Выбирайте карточки, чтобы изучить размеры и связи.</li><li><strong>Проверьте кандидатов.</strong> Откройте <strong>Unused Assets</strong>. Используйте <strong>Browse</strong> и <strong>Open</strong>, чтобы понять назначение ассета перед изменениями.</li><li><strong>Зафиксируйте результат.</strong> Для подготовки обновления запустите <strong>Migration Audit</strong>, затем экспортируйте CSV или JSON для проверки.</li></ol>
+        <p>После изменений ассетов или настроек запустите новое сканирование. Если карта сообщает, что показывает прежний снимок графа, нажмите <strong>Reload map</strong>.</p>
+      </section>
+      <section class="doc-section" id="scope" aria-labelledby="scope-title" data-search="область Analysis Roots Excluded Folders Additional Root Folders динамическая загрузка карты cook packaging корни плагины движок">
+        <h2 id="scope-title">Область анализа и корни</h2>
+        <p><strong>Область анализа</strong> — набор проверяемых ассетов. <strong>Корень</strong> — исходный ассет, который считается используемым; достижимые от него по hard- или soft-связям ассеты сохраняются при анализе неиспользуемого контента.</p>
+        <ul><li><strong>Analysis Roots:</strong> пути контента, включённые в анализ. По умолчанию <code>/Game</code>.</li><li><strong>Excluded Folders:</strong> исключённые пути, даже если они находятся внутри включённой папки.</li><li><strong>Additional Root Folders:</strong> папки с контентом, который нужно считать используемым, в том числе загружаемым динамически.</li><li><strong>Include Plugin Content / Include Engine Content:</strong> расширение области анализа. Оба параметра по умолчанию выключены.</li></ul>
+        <p>Используйте пути пакетов Unreal, например <code>/Game/Characters</code>, а не пути папок Windows. Корни также определяются поддерживаемой конфигурацией карт, упаковки и управления ассетами. Все карты в области считаются корнями. Если в настройках упаковки включён Cook All, все ассеты области считаются используемыми и список кандидатов может быть пуст.</p>
+        <p>Additional Root Folders добавляет корни для сохранения контента, но не расширяет область сканирования. Если нужно полноценно анализировать такую папку, включите её также в Analysis Roots.</p>
+        <div class="callout"><strong>Явно укажите динамический контент.</strong> Пути, собираемые в C++, строки из файлов и внешние системы загрузки могут не появиться в ссылках Asset Registry. Добавьте соответствующие папки в <strong>Additional Root Folders</strong> и проверьте пути загрузки игры.</div>
+        <p>Сканер перепроверяет изолированных кандидатов по всему Asset Registry, включая ссылки извне выбранной области. Это повышает уверенность, но не позволяет обнаружить каждую динамическую ссылку во время игры.</p>
+      </section>
+      <section class="doc-section" id="project-overview" aria-labelledby="project-overview-title" data-search="Overview общий обзор контент размер типы крупнейшие корни пропущенные redirectors пакеты">
+        <h2 id="project-overview-title">Обзор проекта</h2>
+        <p><strong>Overview</strong> показывает итог последнего завершённого сканирования. Здесь удобно выбрать тип контента или корень для дальнейшего исследования.</p>
+        <ul><li><strong>Scanned content:</strong> известные размеры пакетов на диске в заданной области, количество ассетов и пропущенных элементов.</li><li><strong>Size by asset type:</strong> крупнейшие типы и их доля в известных размерах контента.</li><li><strong>Largest root footprints:</strong> корни с тяжёлыми цепочками hard-зависимостей.</li><li><strong>Сводка неиспользуемого контента:</strong> количество кандидатов, ручных проверок и потенциальный освобождаемый объём. Потенциальный объём суммирует известные размеры итоговых кандидатов Safe to delete.</li></ul>
+        <figure class="screenshot"><a href="../assets/screens/overview.png" target="_blank" rel="noopener"><img src="../assets/screens/overview.png" width="1920" height="1080" alt="Overview с размерами контента, типами ассетов и крупнейшими корневыми зависимостями." loading="lazy"></a><figcaption>Данные демонстрационного проекта. Потенциальный объём относится к кандидатам для проверки, а не к уже удалённому контенту.</figcaption></figure>
+        <p>Неизвестные размеры не входят в суммы известных размеров. Числа относятся к области анализа и не обозначают размер всей папки проекта.</p>
+      </section>
+      <section class="doc-section" id="unused-assets" aria-labelledby="unused-assets-title" data-search="Unused Assets Safe to delete Review manually уверенность удаление очистка сироты остров ссылки динамические">
+        <h2 id="unused-assets-title">Неиспользуемые ассеты</h2>
+        <p>Изучите ассеты, недостижимые от найденных используемых корней. В строке указаны тип, известный прямой размер, оценка уверенности и количество ссылающихся ассетов.</p>
+        <div class="table-scroll"><table><caption>Оценка кандидатов на удаление</caption><thead><tr><th>Фильтр</th><th>Значение</th><th>Следующее действие</th></tr></thead><tbody><tr><td><strong>Safe to delete</strong></td><td>Изолированный кандидат без обнаруженных ссылок после проверки реестра.</td><td>Проверьте назначение и динамическое использование, затем при необходимости удалите его обычными средствами Unreal.</td></tr><tr><td><strong>Review manually</strong></td><td>Нужна более внимательная проверка: например, на ассет ссылается остров зависимостей или его класс защищён.</td><td>Изучите связанные ассеты и код загрузки. Остров зависимостей проверяйте целиком.</td></tr></tbody></table></div>
+        <figure class="screenshot"><a href="../assets/screens/unused-assets.png" target="_blank" rel="noopener"><img src="../assets/screens/unused-assets.png" width="1920" height="1080" alt="Список Unused Assets с размерами, оценкой уверенности, количеством ссылок и кнопками Browse, Open и Copy path." loading="lazy"></a><figcaption>Отфильтруйте список по уверенности и изучите кандидатов перед очисткой.</figcaption></figure>
+        <p><strong>Browse</strong> показывает расположение ассета, <strong>Open</strong> открывает его, а <strong>Copy path</strong> копирует путь пакета. <strong>Keep Asset Classes</strong> запрещает присваивать выбранным классам оценку Safe to delete.</p>
+        <p>Вкладка показывает список для проверки и не удаляет ассеты автоматически. После ручной очистки проверьте затронутые карты и пути загрузки, затем повторите сканирование.</p>
+      </section>
+      <section class="doc-section" id="build-size" aria-labelledby="build-size-title" data-search="Build Size Top roots By type общий прямой размер общие текстуры меши байты cooked сжатие упаковка оценка">
+        <h2 id="build-size-title">Размеры и зависимости</h2>
+        <p><strong>Top roots</strong> помогает исследовать корни с большим суммарным размером hard-зависимостей. <strong>By type</strong> показывает типы ассетов с наибольшим вкладом в известные размеры пакетов.</p>
+        <figure class="screenshot"><a href="../assets/screens/build-size.png" target="_blank" rel="noopener"><img src="../assets/screens/build-size.png" width="1920" height="1080" alt="Build Size показывает корневые ассеты, размер с зависимостями, долю и действия с ассетом." loading="lazy"></a><figcaption>Размер с зависимостями помогает найти цепочки, определяющие вес корневого ассета.</figcaption></figure>
+        <div class="table-scroll"><table><caption>Прямой размер и размер с зависимостями</caption><thead><tr><th>Показатель</th><th>Значение</th></tr></thead><tbody><tr><td><strong>Direct size</strong></td><td>Известный сохранённый размер собственного пакета ассета.</td></tr><tr><td><strong>Inclusive hard size</strong></td><td>Пакет корня и достижимые hard-зависимости; каждый пакет учитывается один раз внутри этого набора.</td></tr><tr><td>Общие зависимости</td><td>Один пакет может входить в наборы нескольких корней. При сложении размеров корней он будет посчитан несколько раз.</td></tr><tr><td>Неизвестный или неполный размер</td><td>Известное значение может быть нижней границей. Знак ≥ обозначает неполный расчёт.</td></tr></tbody></table></div>
+        <p>Размер сначала берётся из Asset Registry; при отсутствии значения используется размер сохранённого файла пакета. Это оценка веса контента. Cooking, сжатие, целевая платформа и настройки упаковки могут изменить итоговый размер игры. Для точного размера поставки измерьте собранную cooked-версию.</p>
+      </section>
+      <section class="doc-section" id="dependency-tree" aria-labelledby="dependency-tree-title" data-search="Dependency Tree карта граф инспектор hard soft Referencers стрелки масштаб перемещение клавиатура Find asset Fit to view Load map Reload map Tree view">
+        <h2 id="dependency-tree-title">Карта зависимостей</h2>
+        <ol class="steps"><li>Выберите корень через <strong>Find asset</strong>, выделите ассет в Content Browser и нажмите <strong>Use selected</strong> либо введите путь пакета и нажмите <strong>Load map</strong>.</li><li><strong>Dependencies</strong> показывает используемые им ассеты, а <strong>Referencers</strong> — ассеты, которые ссылаются на него.</li><li>Выберите фильтр <strong>Hard + Soft</strong>, <strong>Hard only</strong> или <strong>Soft only</strong>.</li><li>Выберите карточку. Справа изучите прямой размер и размер с зависимостями, счётчики ссылок, вес видимых зависимостей и записанные замечания аудита.</li><li>Продолжите исследование через <strong>Open Blueprint</strong> или <strong>Open asset</strong>, <strong>Show in browser</strong>, <strong>Copy path</strong> и <strong>Focus asset</strong>.</li></ol>
+        <h3>Как читать линии</h3>
+        <p><strong>Сплошные золотые линии</strong> — hard-ссылки. <strong>Пунктирные серо-голубые линии</strong> — soft-ссылки. Стрелки сохраняют фактическое направление ссылки и в Dependencies, и в Referencers. Точки обозначают общие развилки; разрыв пунктира на пересечении не является соединением.</p>
+        <p>Soft-ссылка может убрать прямую hard-зависимость, но загружаемый через неё ассет всё равно может требоваться игре. Показанный суммарный размер и диаграмма веса относятся к hard-зависимостям.</p>
+        <h3>Управление картой</h3>
+        <div class="table-scroll"><table><caption>Управление картой зависимостей</caption><thead><tr><th>Управление</th><th>Действие</th></tr></thead><tbody><tr><td>Колесо мыши / + / −</td><td>Изменение масштаба.</td></tr><tr><td>Перетаскивание средней или правой кнопкой</td><td>Перемещение карты.</td></tr><tr><td><strong>Fit to view</strong> / Home</td><td>Уместить видимую карту.</td></tr><tr><td>Стрелки влево / вправо</td><td>Выбрать другой узел.</td></tr><tr><td>Enter / двойной щелчок</td><td>Сфокусироваться на выбранном ассете.</td></tr><tr><td><strong>Tree view / Map view</strong></td><td>Переключить граф и дерево, ветви которого раскрываются по запросу.</td></tr><tr><td><strong>Reload map</strong></td><td>Обновить снимок графа после завершённого повторного сканирования.</td></tr></tbody></table></div>
+        <p>Локальная карта ограничена 32 узлами, 96 связями, глубиной 3 и 6 дочерними узлами на раскрытие, а также лимитами работы. Статус сообщает об обрезанных или пропущенных связях; сфокусируйтесь на другом ассете, чтобы изучить их дальше. Настройки глубины и дочерних узлов относятся к Tree view, а не к этим ограничениям карты. Диаграмма инспектора описывает видимые hard-зависимости, а не все ассеты проекта.</p>
+      </section>
+      <section class="doc-section" id="migration-audit" aria-labelledby="migration-audit-title" data-search="Migration Audit Migration Readiness Report Blueprint обновление движок аудит Blockers Warnings Info покрытие инспекция компиляция сохранение провайдер порог">
+        <h2 id="migration-audit-title">Аудит Blueprint</h2>
+        <p><strong>Migration Readiness Report</strong> входит в Dependency Tracer 1.1.0 и помогает подготовить структуру Blueprint перед миграцией движка.</p>
+        <ol class="steps"><li>Настройте область анализа и исключения для слоя Blueprint, который хотите проверить.</li><li>Откройте <strong>Migration Audit</strong>. Нажмите <strong>Run Blueprint Audit</strong> либо <strong>Scan + audit</strong> в верхней панели.</li><li>Проверьте количество найденных и изученных Blueprint и ошибки инспекции. Сначала рассмотрите <strong>Blockers</strong>, затем <strong>Warnings</strong> и <strong>Info</strong>.</li><li>Выберите замечание: посмотрите доказательства, стабильный Rule ID, структуру Blueprint и рекомендуемое действие. Откройте его через <strong>Open Blueprint</strong> или <strong>Show in Content Browser</strong>.</li><li>Экспортируйте результат, внесите подходящие проекту изменения, вручную скомпилируйте и протестируйте Blueprint, затем повторите аудит.</li></ol>
+        <figure class="screenshot"><a href="../assets/screens/migration-audit.png" target="_blank" rel="noopener"><img src="../assets/screens/migration-audit.png" width="1920" height="1080" alt="Migration Readiness Report с покрытием Blueprint, фильтрами важности, замечаниями, доказательствами и рекомендациями." loading="lazy"></a><figcaption>Каждое замечание содержит доказательства и следующее действие. В демопроекте специально созданы структурные случаи для этого отчёта.</figcaption></figure>
+        <h3>Сначала проверьте покрытие</h3>
+        <ul><li><strong>Аудит не запускался:</strong> обычное сканирование не включало дополнительную проверку Blueprint.</li><li><strong>Blueprint не найдены:</strong> проверьте область анализа и исключения, если результат неожиданный.</li><li><strong>Ошибки инспекции:</strong> часть ассетов не удалось прочитать; покрытие неполное.</li><li><strong>Завершено:</strong> запланированная инспекция и анализ закончены. Это не подтверждение совместимости с целевым движком.</li></ul>
+        <p>Инспекция Blueprint запускается отдельно и загружает ассеты области в память. Она читает текущее состояние компиляции загруженного Blueprint, но не вызывает компиляцию, не меняет родителя, не реконструирует, не удаляет и явно не сохраняет ассеты. Загрузка движком может влиять на состояние в памяти; аудит не сохраняет его незаметно и не очищает уже установленный dirty-флаг.</p>
+        <div class="callout"><strong>Проверьте миграцию в копии проекта.</strong> Отчёт находит текущие структурные проблемы и поводы для проверки. Изменения API и сериализации движка, поведение C++ и динамические ссылки нужно проверять в реальной целевой версии.</div>
+      </section>
+      <section class="doc-section" id="audit-rules" aria-labelledby="audit-rules-title" data-search="Rule ID BP_LOAD_FAILED BP_MISSING_PARENT BP_COMPILE_ERROR BP_NEEDS_COMPILE BP_COMPILE_WARNINGS BP_DEPRECATED_NODES BP_ORPHANED_PINS BP_HIGH_COUPLING BP_LARGE_GRAPH BP_DEEP_INHERITANCE BP_PLUGIN_DEPENDENCY BP_HARD_CYCLE">
+        <h2 id="audit-rules-title">Справочник правил</h2>
+        <p>Blockers обозначают текущую проблему или пробел в подготовительном аудите. Warnings включают структурные эвристики, которые стоит изучить. Info указывает провайдеров для проверки в целевом движке.</p>
+        <div class="table-scroll"><table><caption>Правила аудита в версии 1.1.0</caption><thead><tr><th>Rule ID</th><th>Важность</th><th>Что обнаружено</th></tr></thead><tbody>
+          <tr><td><code class="rule-id">BP_LOAD_FAILED</code></td><td>Blocker</td><td>Blueprint не удалось изучить; восстановите ассет или провайдера и повторите аудит.</td></tr>
+          <tr><td><code class="rule-id">BP_MISSING_PARENT</code></td><td>Blocker</td><td>У Blueprint, которому нужен родитель, он отсутствует в загруженном состоянии.</td></tr>
+          <tr><td><code class="rule-id">BP_COMPILE_ERROR</code></td><td>Blocker</td><td>Текущее загруженное состояние сообщает об ошибке компиляции.</td></tr>
+          <tr><td><code class="rule-id">BP_NEEDS_COMPILE</code></td><td>Warning</td><td>Состояние dirty, неизвестно или Blueprint ещё создаётся; нужна ручная компиляция.</td></tr>
+          <tr><td><code class="rule-id">BP_COMPILE_WARNINGS</code></td><td>Warning</td><td>Текущее загруженное состояние содержит предупреждения компилятора.</td></tr>
+          <tr><td><code class="rule-id">BP_DEPRECATED_NODES</code></td><td>Warning</td><td>Обнаружены устаревшие узлы, вызовы или ссылки на типы.</td></tr>
+          <tr><td><code class="rule-id">BP_ORPHANED_PINS</code></td><td>Warning</td><td>Осиротевшие пины, которые нужно сверить с текущей сигнатурой.</td></tr>
+          <tr><td><code class="rule-id">BP_HIGH_COUPLING</code></td><td>Warning</td><td>По умолчанию не менее 20 прямых hard-зависимостей от Blueprint.</td></tr>
+          <tr><td><code class="rule-id">BP_LARGE_GRAPH</code></td><td>Warning</td><td>По умолчанию не менее 500 узлов без комментариев в одном графе.</td></tr>
+          <tr><td><code class="rule-id">BP_DEEP_INHERITANCE</code></td><td>Warning</td><td>По умолчанию не менее 5 классов-предков Blueprint.</td></tr>
+          <tr><td><code class="rule-id">BP_PLUGIN_DEPENDENCY</code></td><td>Info</td><td>Контент плагина или нативные провайдеры плагинов, которые нужно проверить.</td></tr>
+          <tr><td><code class="rule-id">BP_HARD_CYCLE</code></td><td>Warning</td><td>Цикл hard-ссылок между Blueprint области, включая ссылку на самого себя.</td></tr>
+        </tbody></table></div>
+        <p>Подсчёт связанности не учитывает ссылки на самого себя. Связанность и циклы проверяются по прямым hard-связям между Blueprint в области аудита; soft-ссылки, Blueprint вне области и пути через другие типы ассетов в эти проверки не входят. Нативные классы не считаются предками Blueprint. Проверка провайдеров также изучает нативных родителей и вызовы.</p>
+        <p>Порог — повод для проверки, а не предел совместимости. Измените значения в настройках под архитектуру проекта; экспорт фиксирует использованные значения.</p>
+      </section>
+      <section class="doc-section" id="settings" aria-labelledby="settings-title" data-search="настройки значения область исключения классы бюджет 6 миллисекунд глубина 12 дети 5000 пороги 20 500 5 экспорт Report Export Dir">
+        <h2 id="settings-title">Настройки</h2>
+        <p>Откройте <strong>Project Settings &gt; Plugins &gt; Dependency Tracer</strong>. Настройки принадлежат проекту; после изменения конфигурации анализа запустите новое сканирование.</p>
+        <div class="table-scroll"><table><caption>Настройки Dependency Tracer</caption><thead><tr><th>Параметр</th><th>По умолчанию</th><th>Назначение</th></tr></thead><tbody>
+          <tr><td><strong>Analysis Roots</strong></td><td><code>/Game</code></td><td>Включённые пути контента.</td></tr><tr><td><strong>Excluded Folders</strong></td><td>Пусто</td><td>Исключить выбранные пути из анализа.</td></tr><tr><td><strong>Include Plugin Content</strong></td><td>Выключено</td><td>Добавить контент плагинов в анализ.</td></tr><tr><td><strong>Include Engine Content</strong></td><td>Выключено</td><td>Добавить контент движка; не рассматривайте его как материал для очистки.</td></tr><tr><td><strong>Additional Root Folders</strong></td><td>Пусто</td><td>Считать контент используемым, в том числе динамически загружаемые папки.</td></tr><tr><td><strong>Keep Asset Classes</strong></td><td>Пусто</td><td>Запретить оценку Safe to delete для точных имён классов Asset Registry без префикса U.</td></tr><tr><td><strong>Max Tree Display Depth</strong></td><td>12</td><td>Ограничить глубину дерева, а не полного графа анализа.</td></tr><tr><td><strong>Max Children Per Node</strong></td><td>5000</td><td>Ограничить число прямых дочерних элементов дерева перед обрезкой отображения.</td></tr><tr><td><strong>Extract Budget Ms Per Tick</strong></td><td>6 мс</td><td>Работа по извлечению графа за тик редактора. Меньшее значение улучшает отзывчивость.</td></tr><tr><td><strong>Migration Hard Dependency Threshold</strong></td><td>20</td><td>Порог проверки прямой hard-связанности Blueprint.</td></tr><tr><td><strong>Migration Graph Node Threshold</strong></td><td>500</td><td>Узлы без комментариев в одном графе.</td></tr><tr><td><strong>Migration Inheritance Depth Threshold</strong></td><td>5</td><td>Число предков-классов Blueprint.</td></tr><tr><td><strong>Report Export Dir</strong></td><td>Пусто</td><td>При пустом значении используется <code>Saved/DependencyTracer/</code> внутри проекта.</td></tr>
+        </tbody></table></div>
+        <p>Относительный путь каталога отчётов отсчитывается от папки проекта. Пути контента задаются как пути пакетов Unreal. После отмены сканирования запустите его заново, прежде чем делать выводы по новой области.</p>
+      </section>
+      <section class="doc-section" id="exports" aria-labelledby="exports-title" data-search="экспорт CSV JSON отчёт файл Saved схема таблица покрытие метаданные миграция пороги буфер путь">
+        <h2 id="exports-title">Экспорт CSV и JSON</h2>
+        <ol class="steps"><li>Дождитесь завершения сканирования. Если нужны замечания миграции, предварительно запустите дополнительный аудит Blueprint.</li><li>Выберите <strong>Export</strong> в верхней панели либо <strong>Export CSV</strong> / <strong>Export JSON</strong> в Migration Audit.</li><li>Посмотрите путь созданного файла в интерфейсе. Кнопки экспорта Migration Audit также копируют его в буфер обмена.</li><li>Найдите файлы в <code>&lt;Project&gt;/Saved/DependencyTracer/</code> или в каталоге <strong>Report Export Dir</strong>.</li></ol>
+        <p>Оба формата экспортируют отчёт сканирования с доступными данными аудита. Экспорт из аудита не ограничивается строками, видимыми под текущим поиском или фильтром важности.</p>
+        <ul><li><strong>CSV:</strong> изучите разделы отчёта в табличном редакторе или отправьте их на проверку.</li><li><strong>JSON:</strong> сохраните структурированный снимок для сравнения или собственных инструментов.</li></ul>
+        <p>Данные миграции включают покрытие, замечания, метрики каждого Blueprint и использованные пороги. CSV содержит несколько разделов; JSON использует схему версии 1.0. Полный граф зависимостей не экспортируется. Сравнивайте отчёты с одинаковой областью и настройками: изменение области может объяснять изменение итогов и замечаний.</p>
+        <p>Последующее обычное сканирование заменяет результат аудита отчётом без включённого аудита. При отмене или ошибке сохраняется предыдущий завершённый отчёт. После повторного открытия редактора выполните новое сканирование.</p>
+      </section>
+      <section class="doc-section" id="troubleshooting" aria-labelledby="troubleshooting-title" data-search="помощь отсутствует Tools пустое сканирование путь неизвестный размер старый снимок загрузка ошибка нет аудита экспорт модули">
+        <h2 id="troubleshooting-title">Решение проблем</h2>
+        <details class="qa"><summary>Dependency Tracer отсутствует в Tools</summary><p>Включите плагин в <strong>Edit &gt; Plugins</strong> и перезапустите редактор. Проверьте расположение дескриптора внутри папки плагина и соответствие пакета версии движка. Для ручной установки исходников нужны совместимые C++ инструменты и успешная сборка editor target.</p></details>
+        <details class="qa"><summary>Сканирование пустое или не видит папку</summary><p>Проверьте <strong>Analysis Roots</strong> и <strong>Excluded Folders</strong>. Используйте путь пакета, например <code>/Game/Characters</code>. При необходимости включите контент плагинов и запустите новое сканирование.</p></details>
+        <details class="qa"><summary>Размер неизвестен или меньше ожидаемого</summary><p>Сохраните ассет и повторите сканирование. Размеры берутся из известных размеров пакетов на диске; неизвестные и несохранённые размеры могут не учитываться, а неполное исследование даёт нижнюю границу. Cooked-вывод может отличаться от сохранённых пакетов.</p></details>
+        <details class="qa"><summary>Кандидат на удаление на самом деле загружается игрой</summary><p>Проверьте динамические пути и внешние системы загрузки. Добавьте папки в <strong>Additional Root Folders</strong> и повторите анализ. Поиск ссылок не может вывести все загрузки по строковым путям во время игры.</p></details>
+        <details class="qa"><summary>Карта зависимостей показывает старый результат</summary><p>Дождитесь окончания нового сканирования и нажмите <strong>Reload map</strong>. Проверьте корень и hard/soft фильтр. Лимиты отображения могут скрыть часть связей; сфокусируйтесь на другом узле для исследования.</p></details>
+        <details class="qa"><summary>Migration Audit сообщает, что аудит не запускался</summary><p>Обычный <strong>Scan project</strong> не изучает графы Blueprint. В Migration Audit нажмите <strong>Run Blueprint Audit</strong> или <strong>Scan + audit</strong>.</p></details>
+        <details class="qa"><summary>Не удалось изучить Blueprint</summary><p>Откройте ассет вручную. Проверьте отсутствующих родителей, провайдеров и проблемы пакета. Устраните их и повторите аудит; до этого покрытие остаётся частичным.</p></details>
+        <details class="qa"><summary>Замечания не отображаются</summary><p>Очистите поиск, включите все фильтры важности и проверьте количество изученных Blueprint и область анализа. Завершённый аудит без замечаний означает, что текущие правила ничего не нашли; это не сертификат будущей миграции.</p></details>
+        <details class="qa"><summary>Отчёт не экспортируется</summary><p>Дождитесь окончания анализа. Проверьте каталог вывода и права записи. Посмотрите сообщения Dependency Tracer в <strong>Window &gt; Developer Tools &gt; Output Log</strong>.</p></details>
+        <details class="qa"><summary>Unreal сообщает об отсутствующих или несовместимых модулях</summary><p>Выберите архив для точной младшей версии движка и проверьте дублирующиеся установки плагина. Исходники нужно собрать совместимыми C++ инструментами. Не помещайте в установку DLL от другой версии движка.</p></details>
+      </section>
+      <section class="doc-section" id="faq" aria-labelledby="faq-title" data-search="FAQ вопросы автоматическое удаление ассеты место ГБ экономия cooked гарантия миграция включено офлайн интернет runtime редактор демо">
+        <h2 id="faq-title">Частые вопросы</h2>
+        <details class="qa"><summary>Плагин удаляет или переписывает мои ассеты?</summary><p>Unused Assets показывает кандидатов и действия для перехода к ассету. Инспекция Blueprint загружает ассеты, но явно не компилирует и не сохраняет их. Изменения и очистка выполняются отдельно после вашей проверки.</p></details>
+        <details class="qa"><summary>Потенциальный объём означает гарантированно освобождённое место?</summary><p>Это известный размер пакетов кандидатов для проверки. Перед удалением подтвердите, что они не используются. Зависимости, cooking и сжатие влияют на состав и размер конечной игры.</p></details>
+        <details class="qa"><summary>Можно сложить размеры крупнейших корней?</summary><p>Несколько корней могут использовать одни зависимости. Сложение их суммарных размеров повторно учитывает общие пакеты. Для другого представления используйте суммы по типам или измеренную сборку.</p></details>
+        <details class="qa"><summary>Чистый аудит гарантирует успешную миграцию?</summary><p>Нет. Отчёт проверяет текущую структуру и загруженное состояние Blueprint. Проверьте копию проекта в целевом движке, включая C++, провайдеров, контент и поведение.</p></details>
+        <details class="qa"><summary>Migration Readiness Report входит в плагин?</summary><p>Да. Отчёт входит в Dependency Tracer 1.1.0 вместе с инструментами зависимостей и размеров.</p></details>
+        <details class="qa"><summary>Готовой игре нужен Dependency Tracer?</summary><p>Модуль плагина предназначен только для редактора. Интерфейс исследования не работает внутри упакованной игры.</p></details>
+        <details class="qa"><summary>Для анализа нужен онлайн-сервис?</summary><p>Анализ выполняется локально в Unreal Editor. Отчёты CSV и JSON сохраняются в выбранный локальный каталог.</p></details>
+        <details class="qa"><summary>Демонстрационный проект и снимки являются частью моего анализа?</summary><p>Снимки показывают специально созданный демопроект. Ваше сканирование использует настроенные ассеты вашего проекта. Примерные числа и замечания из руководства не являются заранее подставленными результатами плагина.</p></details>
+      </section>
+      <section class="doc-section" id="version" aria-labelledby="version-title" data-search="версия 1.1.0 NexusForgeUE поддержка контакт совместимость 5.5 5.6 5.7 5.8 Windows изменения">
+        <h2 id="version-title">Версия и поддержка</h2>
+        <p>Руководство описывает <strong>Dependency Tracer 1.1.0</strong> для <strong>Unreal Engine 5.5, 5.6, 5.7 и 5.8 на Windows 64-bit</strong>.</p>
+        <h3>Что входит в 1.1.0</h3><p>Интерфейс Project Atlas с карточками зависимостей и инспектором, hard/soft маршруты, исследование неиспользуемого контента, размеры по корням и типам, экспорт CSV/JSON и Migration Readiness Report для Blueprint.</p>
+        <p>Совместимость движка проверялась на UE 5.5.4, 5.6.1, 5.7.4 и 5.8.0 под Win64. Запуск на Mac и Linux не проверялся в среде тестирования этого релиза.</p>
+        <h3>Сообщить о проблеме</h3><p>Напишите на <a href="mailto:nexusforgeuesupport@gmail.com">nexusforgeuesupport@gmail.com</a>.</p><p>Укажите версии Unreal Engine и плагина, выбранную вкладку, корни и исключения, точное сообщение и шаги воспроизведения. Для проблем графа приложите hard/soft фильтр и снимок в полном размере; для аудита — Rule ID и покрытие.</p><p>Передавайте только относящиеся к проблеме части отчётов и логов: они могут содержать пути и имена ассетов проекта.</p>
+      </section>
+      <footer class="page-footer"><span>Dependency Tracer 1.1.0 · NexusForgeUE</span><a href="https://www.fab.com/listings/be0472f5-6168-438f-9bc7-d650cd8481aa">Dependency Tracer на Fab</a></footer>
+    </main>
+  </div>
+  <dialog id="image-viewer" class="image-viewer" aria-labelledby="image-title"><div class="image-toolbar"><span id="image-title">Снимок интерфейса</span><button type="button" id="image-size" aria-pressed="false">Исходный размер</button><button type="button" id="image-close">Закрыть</button></div><div class="image-stage"><img id="large-image" alt=""></div></dialog>
+  <noscript><p class="noscript-note">Все инструкции доступны без JavaScript. Используйте ссылки оглавления для перехода.</p></noscript>
+</body>
+</html>

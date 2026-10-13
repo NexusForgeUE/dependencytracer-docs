@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="site-root" content="./">
+  <meta name="description" content="Install Dependency Tracer, review unused Unreal Engine assets, explore hard and soft references, investigate asset sizes, and use the Blueprint Migration Readiness Report.">
+  <title>Dependency Tracer documentation | Unreal Engine</title>
+  <link rel="canonical" href="https://nexusforgeue.github.io/dependencytracer-docs/">
+  <link rel="alternate" hreflang="en" href="https://nexusforgeue.github.io/dependencytracer-docs/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://nexusforgeue.github.io/dependencytracer-docs/zh-Hans/">
+  <link rel="alternate" hreflang="ru" href="https://nexusforgeue.github.io/dependencytracer-docs/ru/">
+  <link rel="alternate" hreflang="es" href="https://nexusforgeue.github.io/dependencytracer-docs/es/">
+  <link rel="alternate" hreflang="pt-BR" href="https://nexusforgeue.github.io/dependencytracer-docs/pt-BR/">
+  <link rel="alternate" hreflang="de" href="https://nexusforgeue.github.io/dependencytracer-docs/de/">
+  <link rel="alternate" hreflang="ja" href="https://nexusforgeue.github.io/dependencytracer-docs/ja/">
+  <link rel="alternate" hreflang="fr" href="https://nexusforgeue.github.io/dependencytracer-docs/fr/">
+  <link rel="alternate" hreflang="ko" href="https://nexusforgeue.github.io/dependencytracer-docs/ko/">
+  <link rel="alternate" hreflang="x-default" href="https://nexusforgeue.github.io/dependencytracer-docs/">
+  <link rel="icon" type="image/svg+xml" href="assets/dependencytracer.svg">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-search-one="{count} chapter found." data-search-many="{count} chapters found." data-search-empty="No chapters found. Try a shorter search.">
+  <a class="skip-link" href="#main">Skip to documentation</a>
+  <header class="site-header">
+    <a class="brand" href="#overview" aria-label="Dependency Tracer documentation home"><img src="assets/dependencytracer.svg" alt="" width="38" height="38"><span>Dependency Tracer</span></a>
+    <span class="header-label">Documentation</span>
+    <div class="header-actions"><label class="language-picker"><span class="visually-hidden">Documentation language</span><select id="doc-locale" aria-label="Documentation language"><option value="en" selected>English</option><option value="zh-Hans">简体中文</option><option value="ru">Русский</option><option value="es">Español</option><option value="pt-BR">Português (Brasil)</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="fr">Français</option><option value="ko">한국어</option></select></label><span class="version">1.1.0</span><button class="print-button" type="button" id="print-guide">Print guide</button><button class="menu-button" type="button" id="menu-toggle" aria-controls="sidebar" aria-expanded="false">Menu</button></div>
+  </header>
+  <div class="site-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="search-box"><label for="doc-search">Search this guide</label><input id="doc-search" type="search" placeholder="Try: soft references or export" autocomplete="off" aria-controls="search-results"><div id="search-results" class="search-results" hidden></div><p class="visually-hidden" id="search-status" role="status"></p></div>
+      <nav aria-label="Documentation chapters">
+        <p class="nav-heading">Getting started</p>
+        <a href="#overview" aria-current="location">Overview</a><a href="#installation">Installation</a><a href="#quick-start">Your first scan</a><a href="#scope">Scan scope and roots</a>
+        <p class="nav-heading">Investigate your project</p>
+        <a href="#project-overview">Project Overview</a><a href="#unused-assets">Unused Assets</a><a href="#build-size">Build Size</a><a href="#dependency-tree">Dependency Tree</a>
+        <p class="nav-heading">Prepare for migration</p>
+        <a href="#migration-audit">Migration Audit</a><a href="#audit-rules">Audit rule reference</a>
+        <p class="nav-heading">Reference</p>
+        <a href="#settings">Settings</a><a href="#exports">CSV and JSON exports</a><a href="#troubleshooting">Troubleshooting</a><a href="#faq">Common questions</a><a href="#version">Version and support</a>
+      </nav>
+      <div class="sidebar-footer">Unreal Engine 5.5 / 5.6 / 5.7 / 5.8<br>Windows 64-bit</div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <section class="doc-section overview" id="overview" aria-labelledby="overview-title" data-search="getting started introduction asset optimization dependencies migration size Blueprint">
+        <p class="eyebrow">Dependency Tracer 1.1.0 user guide</p>
+        <h1 id="overview-title">Follow the weight.<br>Understand the links.</h1>
+        <p class="lead">Find assets that deserve a closer look, see what keeps them connected to your project, and prepare your Blueprint layer for an engine upgrade.</p>
+        <div class="intro-actions"><a class="primary-link" href="#quick-start">Run your first scan</a><a class="secondary-link" href="#installation">Install Dependency Tracer</a><a class="secondary-link" href="https://www.fab.com/listings/be0472f5-6168-438f-9bc7-d650cd8481aa">View on Fab</a></div>
+        <div class="workflow" aria-label="The four investigation steps"><span><b>1</b> Choose scope</span><span><b>2</b> Scan</span><span><b>3</b> Investigate</span><span><b>4</b> Export and review</span></div>
+        <figure class="screenshot hero-figure"><a href="assets/screens/dependency-tree.png" target="_blank" rel="noopener" aria-label="Open the dependency map screenshot at full size"><img src="assets/screens/dependency-tree.png" width="1920" height="1080" alt="Dependency Tracer's real dependency map with brass hard-reference branches, a dashed soft-reference route and the selected asset inspector."></a><figcaption>The native Unreal Editor interface, captured in a demonstration project. Click any screenshot to inspect it at full size.</figcaption></figure>
+        <h2>Choose what you need to investigate</h2>
+        <div class="method-cards"><a href="#unused-assets"><h3>Review unused content</h3><p>Find isolated assets and dependency islands to inspect before cleanup.</p><span>Unused Assets</span></a><a href="#build-size"><h3>Find the heavy dependencies</h3><p>Follow a root's footprint to the textures, meshes and other assets behind it.</p><span>Build Size and Dependency Tree</span></a><a href="#migration-audit"><h3>Prepare your Blueprints</h3><p>Review structural findings with evidence and a recommended next step.</p><span>Migration Readiness Report</span></a></div>
+        <div class="intro-note"><strong>Read the results as a review queue.</strong> Package sizes are estimates based on saved assets, unused entries are candidates, and the migration report is a structural audit. Use the evidence to decide what to change, then test your project.</div>
+      </section>
+      <section class="doc-section" id="installation" aria-labelledby="installation-title" data-search="install Fab Launcher ZIP source compiler build missing modules enable Windows Plugins version">
+        <h2 id="installation-title">Installation</h2>
+        <p>Dependency Tracer 1.1.0 supports Unreal Engine 5.5, 5.6, 5.7 and 5.8 on Windows 64-bit. Install the package for your engine's minor version.</p>
+        <h3>Install through Fab</h3>
+        <ol class="steps"><li>Find Dependency Tracer in your Fab Library in the Epic Games Launcher and install it for the matching engine.</li><li>Open your project. In <strong>Edit &gt; Plugins</strong>, search for <strong>Dependency Tracer</strong> and enable it if needed.</li><li>Restart the editor, then open <strong>Tools &gt; Dependency Tracer</strong>.</li></ol>
+        <h3>Manual installation from source</h3>
+        <ol class="steps"><li>Close Unreal Editor. Keep one installation of the plugin: an older project copy can take precedence over an engine installation.</li><li>Place the archive's <code>DependencyTracer</code> folder inside your project's <code>Plugins</code> directory. The descriptor must be at the path shown below.</li><li>A source package requires the C++ build tools supported by your exact engine. Build the project's editor target, or build the plugin with Unreal's <code>BuildPlugin</code> tool before installing it.</li><li>Open the project, enable <strong>Dependency Tracer</strong> if needed, restart, and open <strong>Tools &gt; Dependency Tracer</strong>.</li></ol>
+        <pre><code>YourProject/
+  YourProject.uproject
+  Plugins/
+    DependencyTracer/
+      DependencyTracer.uplugin
+      Config/
+      Resources/
+      Source/</code></pre>
+        <p class="small">Source submission archives and the processed Fab installation are different distribution steps. A manually installed source archive may prompt for compilation; a DLL built for one engine minor version cannot be reused in another.</p>
+      </section>
+      <section class="doc-section" id="quick-start" aria-labelledby="quick-start-title" data-search="tutorial first scan Scan project asset save select inspect audit cleanup">
+        <h2 id="quick-start-title">Your first scan</h2>
+        <p>Begin with a familiar part of your project. Save changed assets first so the on-disk package sizes represent their latest saved state. The workbench initially opens Dependency Tree; switch to Overview after scanning. This guide keeps button labels in English to match the plugin interface.</p>
+        <ol class="steps"><li><strong>Choose the content to scan.</strong> Open <strong>Project Settings &gt; Plugins &gt; Dependency Tracer</strong>. Leave <strong>Analysis Roots</strong> at <code>/Game</code> for the project, or choose a smaller folder such as <code>/Game/Characters</code>.</li><li><strong>Scan your project.</strong> Open <strong>Tools &gt; Dependency Tracer</strong> and click <strong>Scan project</strong>. Wait for the scan to finish. The optional Blueprint audit runs when you choose <strong>Scan + audit</strong> or <strong>Run Blueprint Audit</strong>.</li><li><strong>Start with Overview.</strong> Check the scanned asset count, content sizes, asset types and largest root footprints.</li><li><strong>Follow a heavy asset.</strong> Open <strong>Dependency Tree</strong>, choose it with <strong>Find asset</strong> or select it in the Content Browser and click <strong>Use selected</strong>. Select cards to inspect their sizes and references.</li><li><strong>Review the candidates.</strong> Open <strong>Unused Assets</strong>. Use <strong>Browse</strong> and <strong>Open</strong> to check an asset's purpose before changing it.</li><li><strong>Record the result.</strong> Run <strong>Migration Audit</strong> when preparing an upgrade, then export CSV or JSON for review.</li></ol>
+        <p>If you change assets or settings, run a new scan. Use <strong>Reload map</strong> when the map indicates that its snapshot comes from an earlier scan.</p>
+      </section>
+      <section class="doc-section" id="scope" aria-labelledby="scope-title" data-search="scope Analysis Roots Excluded Folders Additional Root Folders dynamic load maps cook packaging primary asset roots plugin engine content">
+        <h2 id="scope-title">Scan scope and roots</h2>
+        <p><strong>Scope</strong> is the set of assets to inspect. A <strong>root</strong> is a starting asset treated as live; assets reachable through its hard or soft references are retained by the unused-content analysis.</p>
+        <ul><li><strong>Analysis Roots:</strong> content paths included in analysis. The default is <code>/Game</code>.</li><li><strong>Excluded Folders:</strong> paths left out of analysis, even when inside an included folder.</li><li><strong>Additional Root Folders:</strong> folders whose assets should be considered live, including content loaded dynamically by your game.</li><li><strong>Include Plugin Content / Include Engine Content:</strong> optional scope expansion. Both are off by default.</li></ul>
+        <p>Use Unreal package paths such as <code>/Game/Characters</code>, rather than Windows folder paths. Roots also come from supported map, packaging and asset-management configuration. All maps in scope are treated as roots. If Cook All is enabled in your packaging configuration, all in-scope assets are live and the unused list can be empty.</p>
+        <p>Additional Root Folders adds preservation roots; it does not widen the scan scope. Include a folder in Analysis Roots as well when you want to fully analyze its content.</p>
+        <div class="callout"><strong>Make dynamic content explicit.</strong> Paths assembled in C++, strings read from a file or external runtime systems may not appear as Asset Registry references. Add the appropriate folders to <strong>Additional Root Folders</strong> and verify your game's loading paths.</div>
+        <p>The scanner rechecks isolated candidates against the full Asset Registry, including references from outside the chosen scope. This improves confidence, but cannot discover every dynamic runtime reference.</p>
+      </section>
+      <section class="doc-section" id="project-overview" aria-labelledby="project-overview-title" data-search="Overview total scanned content sizes types largest roots skipped redirectors package">
+        <h2 id="project-overview-title">Project Overview</h2>
+        <p><strong>Overview</strong> summarizes the latest completed scan. Start here to choose which asset family or root deserves attention.</p>
+        <ul><li><strong>Scanned content:</strong> known on-disk package sizes in the configured scope, with asset and skipped counts.</li><li><strong>Size by asset type:</strong> the largest types, weighted by their share of known scanned bytes.</li><li><strong>Largest root footprints:</strong> roots with heavy hard-reference dependency closures.</li><li><strong>Unused summary:</strong> candidate count, manual-review count and potential reclaim size. Potential reclaim size sums known sizes of the final Safe to delete candidates.</li></ul>
+        <figure class="screenshot"><a href="assets/screens/overview.png" target="_blank" rel="noopener"><img src="assets/screens/overview.png" width="1920" height="1080" alt="Overview showing scanned package sizes, asset types and large root footprints." loading="lazy"></a><figcaption>Example data from the demonstration project. Potential reclaim size describes candidates to review, rather than an amount already deleted.</figcaption></figure>
+        <p>Unknown package sizes are omitted from known-size totals. These figures represent the scan scope; they are not the size of your complete project folder.</p>
+      </section>
+      <section class="doc-section" id="unused-assets" aria-labelledby="unused-assets-title" data-search="Unused Assets Safe to delete Review manually confidence deletion cleanup orphan island referencers dynamic references">
+        <h2 id="unused-assets-title">Unused Assets</h2>
+        <p>Review assets not reachable from the detected live roots. Each entry includes its asset type, known direct size, confidence and referencer count.</p>
+        <div class="table-scroll"><table><caption>Unused-asset confidence</caption><thead><tr><th>Filter</th><th>What it means</th><th>What to do</th></tr></thead><tbody><tr><td>Safe to delete</td><td>An isolated candidate with no detected referencers after the registry checks.</td><td>Check its purpose and any dynamic use before deleting it with Unreal's normal asset tools.</td></tr><tr><td>Review manually</td><td>The asset needs a closer look, for example because a dependency island references it or its class is protected.</td><td>Inspect related assets and loading code. Review a dependency island together.</td></tr></tbody></table></div>
+        <figure class="screenshot"><a href="assets/screens/unused-assets.png" target="_blank" rel="noopener"><img src="assets/screens/unused-assets.png" width="1920" height="1080" alt="Unused Assets lists candidates with size, confidence, referencers and Browse, Open and Copy path actions." loading="lazy"></a><figcaption>Filter the list by confidence and inspect the candidates before cleanup.</figcaption></figure>
+        <p>Use <strong>Browse</strong> to locate the asset, <strong>Open</strong> to inspect it and <strong>Copy path</strong> to share its package path. <strong>Keep Asset Classes</strong> prevents selected classes from receiving the Safe to delete classification.</p>
+        <p>The tab presents a review list and does not automatically delete assets. After manual cleanup, test your affected maps and loading paths, then scan again.</p>
+      </section>
+      <section class="doc-section" id="build-size" aria-labelledby="build-size-title" data-search="Build Size top roots by type inclusive direct shared texture mesh bytes cooked compressed packaging estimated">
+        <h2 id="build-size-title">Build Size</h2>
+        <p>Use <strong>Top roots</strong> to investigate roots with large inclusive hard-reference footprints. Use <strong>By type</strong> to see which asset types account for the most known package bytes.</p>
+        <figure class="screenshot"><a href="assets/screens/build-size.png" target="_blank" rel="noopener"><img src="assets/screens/build-size.png" width="1920" height="1080" alt="Build Size shows roots and their inclusive dependency size, share and asset actions." loading="lazy"></a><figcaption>Inclusive sizes help identify the dependency chains behind a root's footprint.</figcaption></figure>
+        <div class="table-scroll"><table><caption>Direct and inclusive asset sizes</caption><thead><tr><th>Value</th><th>Meaning</th></tr></thead><tbody><tr><td>Direct size</td><td>The known saved size of that asset's own package.</td></tr><tr><td>Inclusive hard size</td><td>The root's own package and its reachable hard dependencies, with each package counted once within that footprint.</td></tr><tr><td>Shared dependencies</td><td>The same package can belong to several roots' footprints. Adding those footprints together counts shared assets more than once.</td></tr><tr><td>Unknown or incomplete size</td><td>The reported known value can be a lower bound. A ≥ marker means that the calculation is incomplete.</td></tr></tbody></table></div>
+        <p>Size lookup first uses Asset Registry package sizes and falls back to the saved package file's filesystem size. These sizes are a proxy for build weight. Cooking, compression, target platform and packaging settings can produce a different shipped size. Measure a cooked build when you need its actual delivery size.</p>
+      </section>
+      <section class="doc-section" id="dependency-tree" aria-labelledby="dependency-tree-title" data-search="Dependency Tree map graph inspector hard soft referencers arrows zoom pan keyboard selected Find asset Fit to view Load map Reload map Tree view">
+        <h2 id="dependency-tree-title">Dependency Tree</h2>
+        <ol class="steps"><li>Choose a root with <strong>Find asset</strong>, select an asset in the Content Browser and click <strong>Use selected</strong>, or enter its package path and click <strong>Load map</strong>.</li><li>Choose <strong>Dependencies</strong> to follow assets it references, or <strong>Referencers</strong> to investigate assets that reference it.</li><li>Filter the map with <strong>Hard + Soft</strong>, <strong>Hard only</strong> or <strong>Soft only</strong>.</li><li>Select a card. Read its direct and inclusive size, reference counters, visible dependency weight and recorded migration findings in the right-hand inspector.</li><li>Use <strong>Open Blueprint</strong> or <strong>Open asset</strong>, <strong>Show in browser</strong>, <strong>Copy path</strong> and <strong>Focus asset</strong> to continue your investigation.</li></ol>
+        <h3>Read the lines</h3>
+        <p><strong>Solid brass lines</strong> are hard references. <strong>Dashed blue-gray lines</strong> are soft references. Arrows follow the actual reference direction in both dependencies and referencers views. Dots identify shared forks; a gap in a dashed route at a crossing is not a connection.</p>
+        <p>Soft references can avoid a direct hard dependency, but assets loaded through them can still be needed at runtime. The displayed inclusive size and weight breakdown concern hard dependencies.</p>
+        <h3>Navigate the map</h3>
+        <div class="table-scroll"><table><caption>Dependency map controls</caption><thead><tr><th>Control</th><th>Action</th></tr></thead><tbody><tr><td>Mouse wheel / + / −</td><td>Zoom the map.</td></tr><tr><td>Middle or right mouse drag</td><td>Pan.</td></tr><tr><td>Fit to view / Home</td><td>Fit the visible map.</td></tr><tr><td>Left / Right arrow keys</td><td>Select another node.</td></tr><tr><td>Enter / double-click</td><td>Focus the selected asset.</td></tr><tr><td>Tree view / Map view</td><td>Switch between the graph and a tree whose branches expand when requested.</td></tr><tr><td>Reload map</td><td>Replace the snapshot after a completed rescan.</td></tr></tbody></table></div>
+        <p>The local map is bounded to 32 nodes, 96 links, depth 3 and 6 children per expansion, plus work limits. Read its status for truncation or omitted links, and focus a different asset to explore further. The depth and children settings apply to Tree view, rather than these map limits. Inspector weight bars describe the visible hard dependencies, rather than every asset in the project.</p>
+      </section>
+      <section class="doc-section" id="migration-audit" aria-labelledby="migration-audit-title" data-search="Migration Audit Migration Readiness Report Blueprint upgrade engine audit blockers warnings info coverage inspection compile save provider threshold">
+        <h2 id="migration-audit-title">Migration Audit</h2>
+        <p>The <strong>Migration Readiness Report</strong> is included in Dependency Tracer 1.1.0. It helps prepare your Blueprint structure before an engine migration.</p>
+        <ol class="steps"><li>Configure the analysis roots and exclusions for the Blueprint layer you want to inspect.</li><li>Open <strong>Migration Audit</strong>. Click <strong>Run Blueprint Audit</strong>, or use <strong>Scan + audit</strong> in the header.</li><li>Read the inspected/found count and any inspection failures. Review <strong>Blockers</strong> first, then <strong>Warnings</strong> and <strong>Info</strong>.</li><li>Select a finding to read its evidence, stable rule ID, Blueprint structure and recommended next step. Use <strong>Open Blueprint</strong> or <strong>Show in Content Browser</strong> to inspect it.</li><li>Export the result, make the changes that are appropriate for your project, compile and test manually, then run the audit again.</li></ol>
+        <figure class="screenshot"><a href="assets/screens/migration-audit.png" target="_blank" rel="noopener"><img src="assets/screens/migration-audit.png" width="1920" height="1080" alt="Migration Readiness Report with Blueprint coverage, severity filters, findings, evidence and recommended next steps." loading="lazy"></a><figcaption>Every finding provides evidence and a next step. The demonstration project includes deliberate structural cases for this report.</figcaption></figure>
+        <h3>Read coverage first</h3>
+        <ul><li><strong>No Blueprint audit:</strong> the last normal scan did not include the optional audit.</li><li><strong>No Blueprints in scope:</strong> check the configured roots and exclusions if this is unexpected.</li><li><strong>Inspection failures:</strong> some assets could not be read; the report has partial coverage.</li><li><strong>Completed:</strong> scheduled inspection and analysis finished. This is not proof of compatibility with a destination engine.</li></ul>
+        <p>Blueprint inspection is opt-in and loads in-scope assets into memory. It reads their current loaded compile status; it does not invoke compilation, reparent, reconstruct, delete or explicitly save them. Engine loading can affect in-memory state, and the audit does not silently save it or clear an existing dirty flag.</p>
+        <div class="callout"><strong>Test the actual engine migration in a project copy.</strong> This report finds current structural issues and review prompts. New engine API changes, serialization changes, C++ behavior and dynamically loaded references still need testing in the destination version.</div>
+      </section>
+      <section class="doc-section" id="audit-rules" aria-labelledby="audit-rules-title" data-search="rule ID BP_LOAD_FAILED BP_MISSING_PARENT BP_COMPILE_ERROR BP_NEEDS_COMPILE BP_COMPILE_WARNINGS BP_DEPRECATED_NODES BP_ORPHANED_PINS BP_HIGH_COUPLING BP_LARGE_GRAPH BP_DEEP_INHERITANCE BP_PLUGIN_DEPENDENCY BP_HARD_CYCLE">
+        <h2 id="audit-rules-title">Audit rule reference</h2>
+        <p>Blockers identify a current issue or a gap in the preparation audit. Warnings include structural heuristics that deserve review. Info identifies providers to check for the destination engine.</p>
+        <div class="table-scroll"><table><caption>Migration audit rules in version 1.1.0</caption><thead><tr><th>Rule ID</th><th>Severity</th><th>What it reports</th></tr></thead><tbody>
+          <tr><td><code class="rule-id">BP_LOAD_FAILED</code></td><td>Blocker</td><td>Blueprint could not be inspected; restore the asset or provider and rerun.</td></tr>
+          <tr><td><code class="rule-id">BP_MISSING_PARENT</code></td><td>Blocker</td><td>A Blueprint that requires a parent has none in its loaded state.</td></tr>
+          <tr><td><code class="rule-id">BP_COMPILE_ERROR</code></td><td>Blocker</td><td>Current loaded compile status reports an error.</td></tr>
+          <tr><td><code class="rule-id">BP_NEEDS_COMPILE</code></td><td>Warning</td><td>Current status is dirty, unknown or still being created; compile manually.</td></tr>
+          <tr><td><code class="rule-id">BP_COMPILE_WARNINGS</code></td><td>Warning</td><td>Current loaded status reports compiler warnings.</td></tr>
+          <tr><td><code class="rule-id">BP_DEPRECATED_NODES</code></td><td>Warning</td><td>Detected deprecated nodes, calls or type references.</td></tr>
+          <tr><td><code class="rule-id">BP_ORPHANED_PINS</code></td><td>Warning</td><td>Orphaned pins to review against the current signature.</td></tr>
+          <tr><td><code class="rule-id">BP_HIGH_COUPLING</code></td><td>Warning</td><td>At least 20 direct hard Blueprint dependencies by default.</td></tr>
+          <tr><td><code class="rule-id">BP_LARGE_GRAPH</code></td><td>Warning</td><td>At least 500 non-comment nodes in one graph by default.</td></tr>
+          <tr><td><code class="rule-id">BP_DEEP_INHERITANCE</code></td><td>Warning</td><td>At least 5 Blueprint ancestor classes by default.</td></tr>
+          <tr><td><code class="rule-id">BP_PLUGIN_DEPENDENCY</code></td><td>Info</td><td>Plugin content or native plugin providers to verify.</td></tr>
+          <tr><td><code class="rule-id">BP_HARD_CYCLE</code></td><td>Warning</td><td>A hard-reference cycle between scoped Blueprints, including a self-cycle.</td></tr>
+        </tbody></table></div>
+        <p>Coupling excludes self-references. Coupling and cycle checks use direct hard links between Blueprints within the audited scope; soft links, out-of-scope Blueprints and links through other asset types are outside those checks. Native classes are not counted as Blueprint ancestors. Plugin provider checks also inspect native parents and calls.</p>
+        <p>A threshold is a review prompt, not a compatibility limit. Change the defaults in project settings to suit your architecture; exports record the actual values used.</p>
+      </section>
+      <section class="doc-section" id="settings" aria-labelledby="settings-title" data-search="settings defaults scope paths exclusions keep classes budget 6 milliseconds 12 depth 5000 children 20 500 5 thresholds Report Export Dir config">
+        <h2 id="settings-title">Settings</h2>
+        <p>Open <strong>Project Settings &gt; Plugins &gt; Dependency Tracer</strong>. Settings belong to the project; run a new scan after changing the analysis configuration.</p>
+        <div class="table-scroll"><table><caption>Dependency Tracer settings</caption><thead><tr><th>Setting</th><th>Default</th><th>Purpose</th></tr></thead><tbody>
+          <tr><td>Analysis Roots</td><td><code>/Game</code></td><td>Included content paths.</td></tr><tr><td>Excluded Folders</td><td>Empty</td><td>Leave selected paths out of analysis.</td></tr><tr><td>Include Plugin Content</td><td>Off</td><td>Expand analysis to plugin content.</td></tr><tr><td>Include Engine Content</td><td>Off</td><td>Expand analysis to engine content; do not treat it as cleanup material.</td></tr><tr><td>Additional Root Folders</td><td>Empty</td><td>Mark content as live, including dynamic loading paths.</td></tr><tr><td>Keep Asset Classes</td><td>Empty</td><td>Prevent Safe to delete classification for exact registry class names, without the U prefix.</td></tr><tr><td>Max Tree Display Depth</td><td>12</td><td>Limits tree display depth, rather than the complete analysis graph.</td></tr><tr><td>Max Children Per Node</td><td>5000</td><td>Limits direct tree children before truncation.</td></tr><tr><td>Extract Budget Ms Per Tick</td><td>6 ms</td><td>Graph extraction work per editor tick. A lower value favors responsiveness.</td></tr><tr><td>Migration Hard Dependency Threshold</td><td>20</td><td>Direct hard Blueprint coupling review threshold.</td></tr><tr><td>Migration Graph Node Threshold</td><td>500</td><td>Non-comment nodes in a single graph.</td></tr><tr><td>Migration Inheritance Depth Threshold</td><td>5</td><td>Blueprint ancestor classes.</td></tr><tr><td>Report Export Dir</td><td>Empty</td><td>Uses <code>Saved/DependencyTracer/</code> inside the project when empty.</td></tr>
+        </tbody></table></div>
+        <p>Relative report directory paths resolve from your project folder. Content path settings use Unreal package paths. A cancelled scan should be restarted before drawing conclusions from a new scope.</p>
+      </section>
+      <section class="doc-section" id="exports" aria-labelledby="exports-title" data-search="export CSV JSON report file Saved schema spreadsheet coverage metadata migration thresholds clipboard path">
+        <h2 id="exports-title">CSV and JSON exports</h2>
+        <ol class="steps"><li>Finish the scan. Run the optional Blueprint audit first if you need migration findings in the export.</li><li>Use <strong>Export</strong> in the header, or <strong>Export CSV</strong> / <strong>Export JSON</strong> in Migration Audit.</li><li>Read the exported path in the interface. Migration Audit's export actions also copy that path to the clipboard.</li><li>Find the files in <code>&lt;Project&gt;/Saved/DependencyTracer/</code>, or the directory configured by <strong>Report Export Dir</strong>.</li></ol>
+        <p>Both formats export the scan report, including its available audit data. An audit export is not just the rows visible under the current search or severity filter.</p>
+        <ul><li><strong>CSV:</strong> inspect the report sections in a spreadsheet or share them for review.</li><li><strong>JSON:</strong> keep a structured snapshot for comparisons or your own tools.</li></ul>
+        <p>Migration data includes coverage, findings, per-Blueprint metrics and the actual thresholds used. CSV contains several report sections; JSON uses schema version 1.0. Neither export includes the complete dependency graph. Compare reports with the same scope and settings; changes in scope can explain changes in totals or findings.</p>
+        <p>A later normal scan replaces the audit result with a scan whose audit is disabled. Cancellation or failure retains the previous completed report. After reopening the editor, run a fresh scan.</p>
+      </section>
+      <section class="doc-section" id="troubleshooting" aria-labelledby="troubleshooting-title" data-search="help missing Tools disabled empty scan wrong path unknown size stale snapshot loading failed no audit export denied compile errors modules">
+        <h2 id="troubleshooting-title">Troubleshooting</h2>
+        <details class="qa"><summary>Dependency Tracer is missing from Tools</summary><p>Enable the plugin in <strong>Edit &gt; Plugins</strong> and restart. Check that its descriptor is directly inside the correct plugin folder and that the package matches your engine version. A manual source installation needs the engine's compatible C++ toolchain and a successful editor build.</p></details>
+        <details class="qa"><summary>The scan is empty or misses a folder</summary><p>Check <strong>Analysis Roots</strong> and <strong>Excluded Folders</strong>. Use a package path such as <code>/Game/Characters</code>. Enable plugin content if your intended scope needs it, then run a fresh scan.</p></details>
+        <details class="qa"><summary>A size is unknown or smaller than expected</summary><p>Save the asset and rescan. The result uses known on-disk Asset Registry package sizes. Unsaved or unknown sizes can be omitted; incomplete traversal can produce a lower bound. Cooked output can differ from saved package sizes.</p></details>
+        <details class="qa"><summary>My unused candidate is actually loaded by the game</summary><p>Check dynamic paths and external loading systems. Add the relevant folders to <strong>Additional Root Folders</strong> and rescan. Reference analysis cannot infer every runtime string-based load.</p></details>
+        <details class="qa"><summary>The dependency map shows old results</summary><p>Wait for the new scan to complete, then click <strong>Reload map</strong>. Check the selected root and hard/soft filter. Display limits can omit links; focus another node to explore further.</p></details>
+        <details class="qa"><summary>Migration Audit says no audit was run</summary><p>A normal <strong>Scan project</strong> does not inspect Blueprint graphs. Open Migration Audit and use <strong>Run Blueprint Audit</strong> or <strong>Scan + audit</strong>.</p></details>
+        <details class="qa"><summary>A Blueprint inspection failed</summary><p>Open the asset manually and check missing parents, providers and package problems. Resolve them and rerun the audit. Until then, coverage is partial.</p></details>
+        <details class="qa"><summary>No findings are visible</summary><p>Clear the search and enable all severity filters. Check the inspected/found count and scope. A completed audit with no findings means that its current rules found none; it does not certify a future engine migration.</p></details>
+        <details class="qa"><summary>A report could not be exported</summary><p>Wait for analysis to finish. Check the configured output directory and write permissions, then read <strong>Window &gt; Developer Tools &gt; Output Log</strong> for Dependency Tracer messages.</p></details>
+        <details class="qa"><summary>Unreal reports missing or incompatible modules</summary><p>Choose the archive for the exact engine minor version and check for duplicate plugin installations. Source packages must be built with a compatible C++ toolchain. Keep DLLs from a different engine version out of the installation.</p></details>
+      </section>
+      <section class="doc-section" id="faq" aria-labelledby="faq-title" data-search="FAQ questions automatically delete saved assets disk GB savings cooked migration guarantee free offline internet runtime editor platforms demo">
+        <h2 id="faq-title">Common questions</h2>
+        <details class="qa"><summary>Does the plugin delete or rewrite my assets?</summary><p>Unused Assets presents candidates and editor navigation actions. Blueprint inspection loads assets but does not explicitly compile or save them. Changes and cleanup are your separate review workflow.</p></details>
+        <details class="qa"><summary>Is the displayed reclaim size guaranteed space saved?</summary><p>It is the known package size of candidates to review. Verify their use before deleting anything. Dependencies, cooking and compression can affect what a shipped build actually contains.</p></details>
+        <details class="qa"><summary>Can I add the largest root sizes together?</summary><p>Several roots can share the same dependencies. Adding their inclusive sizes counts those shared packages repeatedly; use the type totals or a measured build for another view.</p></details>
+        <details class="qa"><summary>Does a clean audit guarantee that migration will work?</summary><p>No. The report reviews current Blueprint structure and loaded status. Validate a project copy in the actual destination engine and test its C++ code, providers, content and behavior.</p></details>
+        <details class="qa"><summary>Is the Migration Readiness Report included?</summary><p>Yes. It is included with Dependency Tracer 1.1.0, alongside the existing dependency and size tools.</p></details>
+        <details class="qa"><summary>Does my packaged game need Dependency Tracer?</summary><p>The plugin's module is editor-only. Its inspection interface does not run inside the packaged game.</p></details>
+        <details class="qa"><summary>Does analysis require an online service?</summary><p>Project analysis runs locally in Unreal Editor. CSV and JSON reports are written to the chosen local directory.</p></details>
+        <details class="qa"><summary>Are the example project and screenshots part of my scan?</summary><p>The screenshots show a deliberately created demonstration project. Your scan uses your configured project assets. The guide's sample sizes and findings are not preset results inserted into the plugin.</p></details>
+      </section>
+      <section class="doc-section" id="version" aria-labelledby="version-title" data-search="version 1.1.0 NexusForgeUE support contact compatibility 5.5 5.6 5.7 5.8 Windows changelog">
+        <h2 id="version-title">Version and support</h2>
+        <p>This guide covers <strong>Dependency Tracer 1.1.0</strong> for <strong>Unreal Engine 5.5, 5.6, 5.7 and 5.8 on Windows 64-bit</strong>.</p>
+        <h3>What's included in 1.1.0</h3><p>The Project Atlas interface with dependency cards and inspector, hard/soft routes, unused-content investigation, root and type size reports, CSV/JSON export, and the Blueprint Migration Readiness Report.</p>
+        <p>Engine compatibility was checked with UE 5.5.4, 5.6.1, 5.7.4 and 5.8.0 on Win64. Mac and Linux execution was not verified in this release's validation environment.</p>
+        <h3>Report a problem</h3><p>Contact <a href="mailto:nexusforgeuesupport@gmail.com">nexusforgeuesupport@gmail.com</a>.</p><p>Include your Unreal Engine and plugin versions, the selected tab, scan roots and exclusions, the exact message, and steps to reproduce the problem. For a graph issue, include the hard/soft filter and a full-size screenshot. For an audit issue, include its rule ID and coverage.</p><p>Share only the relevant parts of reports and logs; they can contain project asset paths and names.</p>
+      </section>
+      <footer class="page-footer"><span>Dependency Tracer 1.1.0 · NexusForgeUE</span><a href="https://www.fab.com/listings/be0472f5-6168-438f-9bc7-d650cd8481aa">Dependency Tracer on Fab</a></footer>
+    </main>
+  </div>
+  <dialog id="image-viewer" class="image-viewer" aria-labelledby="image-title"><div class="image-toolbar"><span id="image-title">Screenshot</span><button type="button" id="image-size" aria-pressed="false">Actual size</button><button type="button" id="image-close">Close image</button></div><div class="image-stage"><img id="large-image" alt=""></div></dialog>
+  <noscript><p class="noscript-note">All instructions are available without JavaScript. Use the chapter links to navigate.</p></noscript>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="site-root" content="../">
+  <meta name="description" content="安装 Dependency Tracer，审查未使用的 Unreal Engine 资产，探索硬引用和软引用，分析资产体积，并使用蓝图迁移就绪报告。">
+  <title>Dependency Tracer 文档 | Unreal Engine</title>
+  <link rel="canonical" href="https://nexusforgeue.github.io/dependencytracer-docs/zh-Hans/">
+  <link rel="alternate" hreflang="en" href="https://nexusforgeue.github.io/dependencytracer-docs/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://nexusforgeue.github.io/dependencytracer-docs/zh-Hans/">
+  <link rel="alternate" hreflang="ru" href="https://nexusforgeue.github.io/dependencytracer-docs/ru/">
+  <link rel="alternate" hreflang="es" href="https://nexusforgeue.github.io/dependencytracer-docs/es/">
+  <link rel="alternate" hreflang="pt-BR" href="https://nexusforgeue.github.io/dependencytracer-docs/pt-BR/">
+  <link rel="alternate" hreflang="de" href="https://nexusforgeue.github.io/dependencytracer-docs/de/">
+  <link rel="alternate" hreflang="ja" href="https://nexusforgeue.github.io/dependencytracer-docs/ja/">
+  <link rel="alternate" hreflang="fr" href="https://nexusforgeue.github.io/dependencytracer-docs/fr/">
+  <link rel="alternate" hreflang="ko" href="https://nexusforgeue.github.io/dependencytracer-docs/ko/">
+  <link rel="alternate" hreflang="x-default" href="https://nexusforgeue.github.io/dependencytracer-docs/">
+  <link rel="icon" type="image/svg+xml" href="../assets/dependencytracer.svg">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/app.js" defer></script>
+</head>
+<body data-search-one="找到 {count} 个章节。" data-search-many="找到 {count} 个章节。" data-search-empty="未找到章节。请尝试更短的搜索词。">
+  <a class="skip-link" href="#main">跳转到文档</a>
+  <header class="site-header">
+    <a class="brand" href="#overview" aria-label="Dependency Tracer 文档首页"><img src="../assets/dependencytracer.svg" alt="" width="38" height="38"><span>Dependency Tracer</span></a>
+    <span class="header-label">文档</span>
+    <div class="header-actions"><label class="language-picker"><span class="visually-hidden">文档语言</span><select id="doc-locale" aria-label="文档语言"><option value="en">English</option><option value="zh-Hans" selected>简体中文</option><option value="ru">Русский</option><option value="es">Español</option><option value="pt-BR">Português (Brasil)</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="fr">Français</option><option value="ko">한국어</option></select></label><span class="version">1.1.0</span><button class="print-button" type="button" id="print-guide">打印指南</button><button class="menu-button" type="button" id="menu-toggle" aria-controls="sidebar" aria-expanded="false">菜单</button></div>
+  </header>
+  <div class="site-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="search-box"><label for="doc-search">搜索本指南</label><input id="doc-search" type="search" placeholder="试试：软引用或导出" autocomplete="off" aria-controls="search-results"><div id="search-results" class="search-results" hidden></div><p class="visually-hidden" id="search-status" role="status"></p></div>
+      <nav aria-label="文档章节">
+        <p class="nav-heading">入门</p>
+        <a href="#overview" aria-current="location">概览</a><a href="#installation">安装</a><a href="#quick-start">首次扫描</a><a href="#scope">扫描范围与根资产</a>
+        <p class="nav-heading">分析项目</p>
+        <a href="#project-overview">项目概览</a><a href="#unused-assets">未使用资产</a><a href="#build-size">构建体积</a><a href="#dependency-tree">依赖树</a>
+        <p class="nav-heading">为迁移做准备</p>
+        <a href="#migration-audit">迁移审计</a><a href="#audit-rules">审计规则参考</a>
+        <p class="nav-heading">参考</p>
+        <a href="#settings">设置</a><a href="#exports">CSV 与 JSON 导出</a><a href="#troubleshooting">故障排查</a><a href="#faq">常见问题</a><a href="#version">版本与支持</a>
+      </nav>
+      <div class="sidebar-footer">Unreal Engine 5.5 / 5.6 / 5.7 / 5.8<br>Windows 64 位</div>
+    </aside>
+    <main id="main" tabindex="-1">
+      <section class="doc-section overview" id="overview" aria-labelledby="overview-title" data-search="入门 简介 资产 优化 依赖 迁移 体积 蓝图 Blueprint">
+        <p class="eyebrow">Dependency Tracer 1.1.0 用户指南</p>
+        <h1 id="overview-title">追踪体积。<br>理解关联。</h1>
+        <p class="lead">找出需要深入检查的资产，了解它们如何与项目保持关联，并为引擎升级做好蓝图层的准备。</p>
+        <div class="intro-actions"><a class="primary-link" href="#quick-start">运行首次扫描</a><a class="secondary-link" href="#installation">安装 Dependency Tracer</a><a class="secondary-link" href="https://www.fab.com/listings/be0472f5-6168-438f-9bc7-d650cd8481aa">在 Fab 上查看</a></div>
+        <div class="workflow" aria-label="四步分析流程"><span><b>1</b> 选择范围</span><span><b>2</b> 扫描</span><span><b>3</b> 分析</span><span><b>4</b> 导出并审查</span></div>
+        <figure class="screenshot hero-figure"><a href="../assets/screens/dependency-tree.png" target="_blank" rel="noopener" aria-label="以原始尺寸打开依赖图截图"><img src="../assets/screens/dependency-tree.png" width="1920" height="1080" alt="Dependency Tracer 的实际依赖图，显示黄铜色硬引用分支、软引用虚线路径以及选中资产的检查器。"></a><figcaption>在演示项目中截取的 Unreal Editor 原生界面。点击任意截图即可查看原始尺寸。</figcaption></figure>
+        <h2>选择需要分析的内容</h2>
+        <div class="method-cards"><a href="#unused-assets"><h3>审查未使用内容</h3><p>查找孤立资产和依赖孤岛，在清理前进行检查。</p><span>未使用资产</span></a><a href="#build-size"><h3>查找占用较大的依赖</h3><p>沿根资产的占用追踪其背后的纹理、网格及其他资产。</p><span>构建体积与依赖树</span></a><a href="#migration-audit"><h3>整理蓝图以做好准备</h3><p>依据证据和下一步建议，审查结构性发现项。</p><span>迁移就绪报告</span></a></div>
+        <div class="intro-note"><strong>将结果作为待审查清单。</strong> 包大小是基于已保存资产的估计值，未使用条目只是候选项，迁移报告则是结构审计。请根据证据决定需要更改的内容，再测试项目。</div>
+      </section>
+      <section class="doc-section" id="installation" aria-labelledby="installation-title" data-search="安装 Fab Launcher ZIP 源代码 编译器 构建 模块缺失 启用 Windows Plugins 版本">
+        <h2 id="installation-title">安装</h2>
+        <p>Dependency Tracer 1.1.0 支持 Windows 64 位平台上的 Unreal Engine 5.5、5.6、5.7 和 5.8。请安装与引擎次版本匹配的插件包。</p>
+        <h3>通过 Fab 安装</h3>
+        <ol class="steps"><li>在 Epic Games Launcher 的 Fab 资源库中找到 Dependency Tracer，并为对应的引擎版本安装。</li><li>打开项目。在 <strong>Edit &gt; Plugins</strong> 中搜索 <strong>Dependency Tracer</strong>，如有需要则启用它。</li><li>重启编辑器，然后打开 <strong>Tools &gt; Dependency Tracer</strong>。</li></ol>
+        <h3>从源代码手动安装</h3>
+        <ol class="steps"><li>关闭 Unreal Editor。只保留一份插件安装：项目中较旧的副本可能优先于引擎目录中的安装。</li><li>将压缩包中的 <code>DependencyTracer</code> 文件夹放入项目的 <code>Plugins</code> 目录。插件描述文件必须位于下方所示路径。</li><li>源代码包需要与你所用引擎版本完全匹配的受支持 C++ 构建工具。请构建项目的编辑器目标，或在安装前使用 Unreal 的 <code>BuildPlugin</code> 工具构建插件。</li><li>打开项目，如有需要则启用 <strong>Dependency Tracer</strong>，重启后打开 <strong>Tools &gt; Dependency Tracer</strong>。</li></ol>
+        <pre><code>YourProject/
+  YourProject.uproject
+  Plugins/
+    DependencyTracer/
+      DependencyTracer.uplugin
+      Config/
+      Resources/
+      Source/</code></pre>
+        <p class="small">源代码提交压缩包与经过处理的 Fab 安装包属于不同的分发环节。手动安装源代码压缩包时可能会提示编译；为某个引擎次版本构建的 DLL 不能用于另一个次版本。</p>
+      </section>
+      <section class="doc-section" id="quick-start" aria-labelledby="quick-start-title" data-search="教程 首次 扫描 Scan project 资产 保存 选择 检查 审计 清理">
+        <h2 id="quick-start-title">首次扫描</h2>
+        <p>从项目中熟悉的部分开始。先保存已修改的资产，让磁盘上的包大小反映最新保存状态。工作台最初会打开 <strong>Dependency Tree</strong>；扫描后切换到 <strong>Overview</strong>。本指南保留英文按钮名称，以便与插件界面对应。</p>
+        <ol class="steps"><li><strong>选择扫描内容。</strong> 打开 <strong>Project Settings &gt; Plugins &gt; Dependency Tracer</strong>。若分析整个项目，将 <strong>Analysis Roots</strong> 保持为 <code>/Game</code>；也可选择较小的文件夹，例如 <code>/Game/Characters</code>。</li><li><strong>扫描项目。</strong> 打开 <strong>Tools &gt; Dependency Tracer</strong> 并点击 <strong>Scan project</strong>，等待扫描完成。选择 <strong>Scan + audit</strong> 或 <strong>Run Blueprint Audit</strong> 时才会运行可选的蓝图审计。</li><li><strong>从 Overview 开始。</strong> 检查扫描的资产数量、内容大小、资产类型及占用最大的根资产。</li><li><strong>追踪较大的资产。</strong> 打开 <strong>Dependency Tree</strong>，使用 <strong>Find asset</strong> 选择资产，或在内容浏览器中选中资产后点击 <strong>Use selected</strong>。选择卡片以检查大小和引用。</li><li><strong>审查候选项。</strong> 打开 <strong>Unused Assets</strong>。更改资产之前，使用 <strong>Browse</strong> 和 <strong>Open</strong> 确认其用途。</li><li><strong>记录结果。</strong> 准备升级时运行 <strong>Migration Audit</strong>，然后导出 CSV 或 JSON 以供审查。</li></ol>
+        <p>更改资产或设置后，请重新扫描。如果依赖图提示快照来自较早的扫描，请使用 <strong>Reload map</strong>。</p>
+      </section>
+      <section class="doc-section" id="scope" aria-labelledby="scope-title" data-search="范围 Analysis Roots Excluded Folders Additional Root Folders 动态 加载 关卡 Cook 打包 主资产 根资产 插件 引擎 内容">
+        <h2 id="scope-title">扫描范围与根资产</h2>
+        <p><strong>范围</strong>是要检查的资产集合。<strong>根资产</strong>是被视为正在使用的起始资产；未使用内容分析会保留通过其硬引用或软引用可到达的资产。</p>
+        <ul><li><strong>Analysis Roots:</strong> 纳入分析的内容路径。默认为 <code>/Game</code>。</li><li><strong>Excluded Folders:</strong> 从分析中排除的路径，即使它位于已纳入的文件夹内。</li><li><strong>Additional Root Folders:</strong> 其中的资产应视为正在使用的文件夹，包括游戏动态加载的内容。</li><li><strong>Include Plugin Content / Include Engine Content:</strong> 可选的扫描范围扩展。两项默认均关闭。</li></ul>
+        <p>请使用 <code>/Game/Characters</code> 这样的 Unreal 包路径。Windows 文件夹路径不适用。受支持的关卡、打包和资产管理配置也会提供根资产。范围内的所有关卡均视为根资产。如果打包配置启用了 <strong>Cook All</strong>，范围内的全部资产都会视为正在使用，未使用列表可能为空。</p>
+        <p><strong>Additional Root Folders</strong> 会添加需要保留的根资产，但不会扩大扫描范围。如果要完整分析某个文件夹的内容，也应将它加入 <strong>Analysis Roots</strong>。</p>
+        <div class="callout"><strong>明确指定动态内容。</strong> C++ 中拼接的路径、从文件读取的字符串或外部运行时系统可能不会作为资产注册表引用出现。请将相应文件夹加入 <strong>Additional Root Folders</strong>，并核实游戏的加载路径。</div>
+        <p>扫描器会使用完整的资产注册表再次检查孤立候选项，包括所选范围之外的引用。这可以提高结果的可信度，但无法发现所有运行时动态引用。</p>
+      </section>
+      <section class="doc-section" id="project-overview" aria-labelledby="project-overview-title" data-search="Overview 概览 总计 扫描 内容 大小 类型 最大 根资产 跳过 重定向器 包">
+        <h2 id="project-overview-title">项目概览</h2>
+        <p><strong>Overview</strong> 汇总最近一次已完成的扫描。可从这里选择需要重点关注的资产类别或根资产。</p>
+        <ul><li><strong>Scanned content:</strong> 配置范围内已知的磁盘包大小，以及资产数量和跳过数量。</li><li><strong>Size by asset type:</strong> 按已知扫描字节总量中的占比，展示体积最大的资产类型。</li><li><strong>Largest root footprints:</strong> 硬引用依赖闭包占用较大的根资产。</li><li><strong>Unused summary:</strong> 候选项数量、需手动审查的数量和可能回收的体积。可能回收的体积仅汇总最终归类为 <strong>Safe to delete</strong> 的候选项的已知大小。</li></ul>
+        <figure class="screenshot"><a href="../assets/screens/overview.png" target="_blank" rel="noopener"><img src="../assets/screens/overview.png" width="1920" height="1080" alt="概览页面展示扫描包大小、资产类型以及占用较大的根资产。" loading="lazy"></a><figcaption>演示项目中的示例数据。可能回收的体积表示待审查候选项的大小，并非已经删除的体积。</figcaption></figure>
+        <p>大小未知的包不会计入已知大小总量。这些数值反映扫描范围，并非整个项目文件夹的大小。</p>
+      </section>
+      <section class="doc-section" id="unused-assets" aria-labelledby="unused-assets-title" data-search="Unused Assets Safe to delete Review manually 未使用资产 可信度 删除 清理 孤立 依赖孤岛 引用者 动态引用">
+        <h2 id="unused-assets-title">未使用资产</h2>
+        <p>审查从检测到的正在使用的根资产无法到达的资产。每个条目包含资产类型、已知直接大小、可信度以及引用它的资产数量。</p>
+        <div class="table-scroll"><table><caption>未使用资产的可信度</caption><thead><tr><th>筛选条件</th><th>含义</th><th>建议操作</th></tr></thead><tbody><tr><td><strong>Safe to delete</strong></td><td>经过注册表检查后，未检测到任何引用者的孤立候选项。</td><td>在使用 Unreal 常规资产工具删除之前，请确认其用途及所有动态使用情况。</td></tr><tr><td><strong>Review manually</strong></td><td>需要进一步检查的资产，例如被依赖孤岛引用，或所属类受到保护。</td><td>检查相关资产和加载代码。对于依赖孤岛，请将其整体一起审查。</td></tr></tbody></table></div>
+        <figure class="screenshot"><a href="../assets/screens/unused-assets.png" target="_blank" rel="noopener"><img src="../assets/screens/unused-assets.png" width="1920" height="1080" alt="未使用资产列表显示候选项的大小、可信度、引用者，以及浏览、打开和复制路径操作。" loading="lazy"></a><figcaption>按可信度筛选列表，并在清理前检查候选项。</figcaption></figure>
+        <p>使用 <strong>Browse</strong> 定位资产，使用 <strong>Open</strong> 检查资产，使用 <strong>Copy path</strong> 分享其包路径。<strong>Keep Asset Classes</strong> 可防止指定类被归为 <strong>Safe to delete</strong>。</p>
+        <p>此选项卡提供审查列表，不会自动删除资产。手动清理后，请测试受影响的关卡和加载路径，然后重新扫描。</p>
+      </section>
+      <section class="doc-section" id="build-size" aria-labelledby="build-size-title" data-search="Build Size Top roots By type 构建体积 根资产 按类型 含依赖 直接 共享 纹理 网格 字节 Cook 压缩 打包 估计">
+        <h2 id="build-size-title">构建体积</h2>
+        <p>使用 <strong>Top roots</strong> 分析含依赖的硬引用占用较大的根资产。使用 <strong>By type</strong> 查看哪些资产类型占据最多的已知包字节。</p>
+        <figure class="screenshot"><a href="../assets/screens/build-size.png" target="_blank" rel="noopener"><img src="../assets/screens/build-size.png" width="1920" height="1080" alt="构建体积页面展示根资产及其含依赖大小、占比和资产操作。" loading="lazy"></a><figcaption>含依赖大小有助于找出根资产占用背后的依赖链。</figcaption></figure>
+        <div class="table-scroll"><table><caption>资产的直接大小与含依赖大小</caption><thead><tr><th>数值</th><th>含义</th></tr></thead><tbody><tr><td>直接大小</td><td>该资产自身包已保存且已知的大小。</td></tr><tr><td>含硬依赖大小</td><td>根资产自身的包加上所有可到达的硬依赖；在该根资产的占用计算中，每个包只计一次。</td></tr><tr><td>共享依赖</td><td>同一个包可能同时包含在多个根资产的占用中。将这些占用相加会重复计算共享资产。</td></tr><tr><td>未知或不完整的大小</td><td>报告中的已知数值可能只是下限。≥ 标记表示计算尚不完整。</td></tr></tbody></table></div>
+        <p>大小查询优先使用资产注册表中的包大小，无法取得时则使用已保存包文件的文件系统大小。这些大小只是构建体积的估计依据。Cook、压缩、目标平台及打包设置均可能导致发布体积不同。需要实际交付体积时，请测量经过 Cook 的构建。</p>
+      </section>
+      <section class="doc-section" id="dependency-tree" aria-labelledby="dependency-tree-title" data-search="Dependency Tree 依赖树 依赖图 图 检查器 硬引用 软引用 引用者 箭头 缩放 平移 键盘 选中 Find asset Fit to view Load map Reload map Tree view">
+        <h2 id="dependency-tree-title">依赖树</h2>
+        <ol class="steps"><li>使用 <strong>Find asset</strong> 选择根资产，或在内容浏览器中选择资产后点击 <strong>Use selected</strong>，也可输入包路径并点击 <strong>Load map</strong>。</li><li>选择 <strong>Dependencies</strong> 追踪它所引用的资产，或选择 <strong>Referencers</strong> 分析引用它的资产。</li><li>使用 <strong>Hard + Soft</strong>、<strong>Hard only</strong> 或 <strong>Soft only</strong> 筛选依赖图。</li><li>选择一张卡片。在右侧检查器中查看直接大小、含依赖大小、引用计数、可见依赖的体积占比，以及已记录的迁移审计结果。</li><li>使用 <strong>Open Blueprint</strong> 或 <strong>Open asset</strong>、<strong>Show in browser</strong>、<strong>Copy path</strong> 和 <strong>Focus asset</strong> 继续分析。</li></ol>
+        <h3>理解连接线</h3>
+        <p><strong>黄铜色实线</strong>表示硬引用。<strong>蓝灰色虚线</strong>表示软引用。无论查看依赖项还是引用者，箭头都沿实际引用方向指向。圆点表示共享分支；虚线路径在交叉处的缺口并不表示连接。</p>
+        <p>软引用可以避免直接硬依赖，但通过软引用加载的资产在运行时仍可能不可或缺。显示的含依赖大小和体积分布仅涉及硬依赖。</p>
+        <h3>操作依赖图</h3>
+        <div class="table-scroll"><table><caption>依赖图操作方式</caption><thead><tr><th>操作</th><th>效果</th></tr></thead><tbody><tr><td>鼠标滚轮 / + / −</td><td>缩放依赖图。</td></tr><tr><td>按住鼠标中键或右键拖动</td><td>平移。</td></tr><tr><td><strong>Fit to view</strong> / Home</td><td>将可见依赖图适配到视图。</td></tr><tr><td>左 / 右方向键</td><td>选择其他节点。</td></tr><tr><td>Enter / 双击</td><td>聚焦选中的资产。</td></tr><tr><td><strong>Tree view / Map view</strong></td><td>在依赖图和按需展开分支的树状视图之间切换。</td></tr><tr><td><strong>Reload map</strong></td><td>重新扫描完成后替换快照。</td></tr></tbody></table></div>
+        <p>局部依赖图最多显示 32 个节点、96 条连接，深度为 3，每次展开最多 6 个子节点，此外还受处理工作量限制。查看状态以确认是否有截断或省略的连接，再聚焦其他资产继续探索。深度和子节点设置适用于 <strong>Tree view</strong>，不会改变上述依赖图限制。检查器中的体积条表示可见硬依赖的大小分布，并非项目中的全部资产。</p>
+      </section>
+      <section class="doc-section" id="migration-audit" aria-labelledby="migration-audit-title" data-search="Migration Audit Migration Readiness Report 蓝图 升级 引擎 迁移审计 阻断 警告 信息 覆盖 检查 编译 保存 提供方 阈值">
+        <h2 id="migration-audit-title">迁移审计</h2>
+        <p><strong>Migration Readiness Report</strong> 包含在 Dependency Tracer 1.1.0 中，可帮助你在引擎迁移前整理蓝图结构。</p>
+        <ol class="steps"><li>为要检查的蓝图层配置分析根路径和排除项。</li><li>打开 <strong>Migration Audit</strong>。点击 <strong>Run Blueprint Audit</strong>，或使用页眉中的 <strong>Scan + audit</strong>。</li><li>查看已检查/已发现的蓝图数量及检查失败情况。先审查 <strong>Blockers</strong>，再查看 <strong>Warnings</strong> 和 <strong>Info</strong>。</li><li>选择一个发现项，查看其依据、稳定规则 ID、蓝图结构及建议的下一步。使用 <strong>Open Blueprint</strong> 或 <strong>Show in Content Browser</strong> 进行检查。</li><li>导出结果，实施适合项目的更改，手动编译并测试，然后再次运行审计。</li></ol>
+        <figure class="screenshot"><a href="../assets/screens/migration-audit.png" target="_blank" rel="noopener"><img src="../assets/screens/migration-audit.png" width="1920" height="1080" alt="迁移就绪报告展示蓝图覆盖情况、严重程度筛选、发现项、依据和建议的下一步。" loading="lazy"></a><figcaption>每个发现项都提供依据和下一步建议。演示项目特意为此报告设置了若干结构案例。</figcaption></figure>
+        <h3>先查看覆盖情况</h3>
+        <ul><li><strong>No Blueprint audit:</strong> 最近一次常规扫描未包含可选审计。</li><li><strong>No Blueprints in scope:</strong> 如果与预期不符，请检查配置的根路径和排除项。</li><li><strong>Inspection failures:</strong> 部分资产无法读取；报告仅覆盖部分内容。</li><li><strong>Completed:</strong> 已安排的检查与分析完成。这并不能证明与目标引擎兼容。</li></ul>
+        <p>蓝图检查需要主动选择，并会将范围内的资产加载到内存。它读取当前已加载的编译状态，不会执行编译、重新指定父类、重建、删除或显式保存。引擎加载可能影响内存中的状态；审计不会在后台保存这些变化，也不会清除已有的未保存标记。</p>
+        <div class="callout"><strong>在项目副本中测试实际的引擎迁移。</strong> 此报告查找当前结构问题，并提示需要审查的内容。新引擎的 API 变化、序列化变化、C++ 行为以及动态加载的引用仍需在目标版本中测试。</div>
+      </section>
+      <section class="doc-section" id="audit-rules" aria-labelledby="audit-rules-title" data-search="规则 ID BP_LOAD_FAILED BP_MISSING_PARENT BP_COMPILE_ERROR BP_NEEDS_COMPILE BP_COMPILE_WARNINGS BP_DEPRECATED_NODES BP_ORPHANED_PINS BP_HIGH_COUPLING BP_LARGE_GRAPH BP_DEEP_INHERITANCE BP_PLUGIN_DEPENDENCY BP_HARD_CYCLE">
+        <h2 id="audit-rules-title">审计规则参考</h2>
+        <p><strong>Blockers</strong> 指出当前问题或准备审计的覆盖缺口。<strong>Warnings</strong> 包含值得审查的结构性启发式判断。<strong>Info</strong> 指出需要核实目标引擎支持情况的提供方。</p>
+        <div class="table-scroll"><table><caption>1.1.0 版本的迁移审计规则</caption><thead><tr><th>规则 ID</th><th>严重程度</th><th>报告内容</th></tr></thead><tbody>
+          <tr><td><code class="rule-id">BP_LOAD_FAILED</code></td><td><strong>Blocker</strong>（阻断项）</td><td>无法检查蓝图；请恢复资产或其提供方，然后重新运行审计。</td></tr>
+          <tr><td><code class="rule-id">BP_MISSING_PARENT</code></td><td><strong>Blocker</strong>（阻断项）</td><td>需要父类的蓝图在已加载状态下没有父类。</td></tr>
+          <tr><td><code class="rule-id">BP_COMPILE_ERROR</code></td><td><strong>Blocker</strong>（阻断项）</td><td>当前已加载的编译状态报告了错误。</td></tr>
+          <tr><td><code class="rule-id">BP_NEEDS_COMPILE</code></td><td><strong>Warning</strong>（警告）</td><td>当前状态为已修改、未知或仍在创建中；请手动编译。</td></tr>
+          <tr><td><code class="rule-id">BP_COMPILE_WARNINGS</code></td><td><strong>Warning</strong>（警告）</td><td>当前已加载的状态报告了编译器警告。</td></tr>
+          <tr><td><code class="rule-id">BP_DEPRECATED_NODES</code></td><td><strong>Warning</strong>（警告）</td><td>检测到已弃用的节点、调用或类型引用。</td></tr>
+          <tr><td><code class="rule-id">BP_ORPHANED_PINS</code></td><td><strong>Warning</strong>（警告）</td><td>存在需要对照当前签名审查的孤立引脚。</td></tr>
+          <tr><td><code class="rule-id">BP_HIGH_COUPLING</code></td><td><strong>Warning</strong>（警告）</td><td>默认在直接硬引用蓝图依赖数量达到或超过 20 时触发。</td></tr>
+          <tr><td><code class="rule-id">BP_LARGE_GRAPH</code></td><td><strong>Warning</strong>（警告）</td><td>默认在单个图中的非注释节点数量达到或超过 500 时触发。</td></tr>
+          <tr><td><code class="rule-id">BP_DEEP_INHERITANCE</code></td><td><strong>Warning</strong>（警告）</td><td>默认在蓝图祖先类数量达到或超过 5 时触发。</td></tr>
+          <tr><td><code class="rule-id">BP_PLUGIN_DEPENDENCY</code></td><td><strong>Info</strong>（信息）</td><td>存在需要核实的插件内容或原生插件提供方。</td></tr>
+          <tr><td><code class="rule-id">BP_HARD_CYCLE</code></td><td><strong>Warning</strong>（警告）</td><td>范围内的蓝图之间存在硬引用循环，包括自引用循环。</td></tr>
+        </tbody></table></div>
+        <p>耦合检查排除自引用。耦合与循环检查仅使用审计范围内蓝图之间的直接硬连接；软连接、范围外蓝图以及经过其他资产类型的连接均不在检查范围内。原生类不计入蓝图祖先数量。插件提供方检查还会检查原生父类和调用。</p>
+        <p>阈值是提醒审查的依据，并非兼容性限制。请在项目设置中调整默认值以适应架构；导出报告会记录实际使用的值。</p>
+      </section>
+      <section class="doc-section" id="settings" aria-labelledby="settings-title" data-search="设置 默认值 范围 路径 排除 保留 类 预算 6 毫秒 12 深度 5000 子节点 20 500 5 阈值 Report Export Dir 配置">
+        <h2 id="settings-title">设置</h2>
+        <p>打开 <strong>Project Settings &gt; Plugins &gt; Dependency Tracer</strong>。设置属于项目本身；更改分析配置后请重新扫描。</p>
+        <div class="table-scroll"><table><caption>Dependency Tracer 设置</caption><thead><tr><th>设置项</th><th>默认值</th><th>用途</th></tr></thead><tbody>
+          <tr><td><strong>Analysis Roots</strong></td><td><code>/Game</code></td><td>纳入分析的内容路径。</td></tr><tr><td><strong>Excluded Folders</strong></td><td>空</td><td>从分析中排除指定路径。</td></tr><tr><td><strong>Include Plugin Content</strong></td><td>关闭</td><td>将分析范围扩展到插件内容。</td></tr><tr><td><strong>Include Engine Content</strong></td><td>关闭</td><td>将分析范围扩展到引擎内容；不要将引擎内容作为清理对象。</td></tr><tr><td><strong>Additional Root Folders</strong></td><td>空</td><td>将内容标记为正在使用，包括动态加载路径。</td></tr><tr><td><strong>Keep Asset Classes</strong></td><td>空</td><td>按注册表中的精确类名保护资产，使其不会归为 <strong>Safe to delete</strong>；类名不带 U 前缀。</td></tr><tr><td><strong>Max Tree Display Depth</strong></td><td>12</td><td>限制树状视图的显示深度，不限制完整分析图。</td></tr><tr><td><strong>Max Children Per Node</strong></td><td>5000</td><td>限制截断前显示的直属子节点数量。</td></tr><tr><td><strong>Extract Budget Ms Per Tick</strong></td><td>6 ms</td><td>每次编辑器 tick 分配给依赖图提取的工作时间。较低的值有利于界面响应。</td></tr><tr><td><strong>Migration Hard Dependency Threshold</strong></td><td>20</td><td>直接硬引用蓝图耦合的审查阈值。</td></tr><tr><td><strong>Migration Graph Node Threshold</strong></td><td>500</td><td>单个图中的非注释节点数量。</td></tr><tr><td><strong>Migration Inheritance Depth Threshold</strong></td><td>5</td><td>蓝图祖先类数量。</td></tr><tr><td><strong>Report Export Dir</strong></td><td>空</td><td>留空时使用项目内的 <code>Saved/DependencyTracer/</code>。</td></tr>
+        </tbody></table></div>
+        <p>相对报告目录路径以项目文件夹为基准解析。内容路径设置使用 Unreal 包路径。如果取消了扫描，请重新运行扫描后，再根据新范围作出判断。</p>
+      </section>
+      <section class="doc-section" id="exports" aria-labelledby="exports-title" data-search="导出 CSV JSON 报告 文件 Saved 数据结构 电子表格 覆盖 元数据 迁移 阈值 剪贴板 路径">
+        <h2 id="exports-title">CSV 与 JSON 导出</h2>
+        <ol class="steps"><li>等待扫描完成。如果导出中需要迁移发现项，请先运行可选的蓝图审计。</li><li>使用页眉中的 <strong>Export</strong>，或迁移审计中的 <strong>Export CSV</strong> / <strong>Export JSON</strong>。</li><li>在界面中查看导出路径。迁移审计中的导出操作还会将该路径复制到剪贴板。</li><li>在 <code>&lt;Project&gt;/Saved/DependencyTracer/</code>，或 <strong>Report Export Dir</strong> 配置的目录中查找文件。</li></ol>
+        <p>两种格式都会导出扫描报告及其中可用的审计数据。审计导出不限于当前搜索或严重程度筛选后可见的行。</p>
+        <ul><li><strong>CSV:</strong> 在电子表格中查看报告各部分，或分享给他人审查。</li><li><strong>JSON:</strong> 保存结构化快照，便于比较或供自定义工具使用。</li></ul>
+        <p>迁移数据包含覆盖情况、发现项、逐个蓝图的指标及实际使用的阈值。CSV 包含多个报告部分；JSON 使用 1.0 版数据结构。两种导出都不包含完整依赖图。请在相同范围和设置下比较报告；范围变化可能导致总量或发现项发生变化。</p>
+        <p>后续的常规扫描会用未启用审计的扫描结果替换原有审计结果。取消或失败时会保留此前已完成的报告。重新打开编辑器后，请运行一次新扫描。</p>
+      </section>
+      <section class="doc-section" id="troubleshooting" aria-labelledby="troubleshooting-title" data-search="帮助 缺失 Tools 禁用 空 扫描 路径错误 未知大小 旧快照 加载失败 未审计 导出拒绝 编译错误 模块">
+        <h2 id="troubleshooting-title">故障排查</h2>
+        <details class="qa"><summary>Tools 菜单中找不到 Dependency Tracer</summary><p>在 <strong>Edit &gt; Plugins</strong> 中启用插件并重启。检查描述文件是否直接位于正确的插件文件夹中，并确认插件包与引擎版本匹配。手动安装源代码需要与引擎兼容的 C++ 工具链，并成功构建编辑器目标。</p></details>
+        <details class="qa"><summary>扫描结果为空或缺少文件夹</summary><p>检查 <strong>Analysis Roots</strong> 和 <strong>Excluded Folders</strong>。使用 <code>/Game/Characters</code> 这样的包路径。如果需要分析插件内容，请启用相应选项，然后重新扫描。</p></details>
+        <details class="qa"><summary>大小未知或比预期小</summary><p>保存资产后重新扫描。结果使用资产注册表中已知的磁盘包大小。未保存或大小未知的包可能被省略；遍历不完整时可能只得到下限。Cook 后的输出可能与已保存包大小不同。</p></details>
+        <details class="qa"><summary>未使用候选资产实际上会被游戏加载</summary><p>检查动态路径和外部加载系统。将相关文件夹加入 <strong>Additional Root Folders</strong> 后重新扫描。引用分析无法推断所有运行时基于字符串的加载。</p></details>
+        <details class="qa"><summary>依赖图仍显示旧结果</summary><p>等待新扫描完成后点击 <strong>Reload map</strong>。检查当前根资产及硬/软引用筛选条件。显示限制可能省略连接；可聚焦其他节点进一步分析。</p></details>
+        <details class="qa"><summary>迁移审计提示尚未运行审计</summary><p>常规 <strong>Scan project</strong> 不检查蓝图图表。打开 <strong>Migration Audit</strong> 并使用 <strong>Run Blueprint Audit</strong> 或 <strong>Scan + audit</strong>。</p></details>
+        <details class="qa"><summary>蓝图检查失败</summary><p>手动打开资产，检查缺失的父类、提供方及包问题。解决后重新运行审计。在此之前，报告覆盖范围仍不完整。</p></details>
+        <details class="qa"><summary>看不到任何发现项</summary><p>清除搜索条件并启用所有严重程度筛选项。检查已检查/已发现的数量及范围。审计完成且无发现项，仅表示当前规则未发现问题；这不能认证未来的引擎迁移会成功。</p></details>
+        <details class="qa"><summary>报告无法导出</summary><p>等待分析完成。检查配置的输出目录和写入权限，然后在 <strong>Window &gt; Developer Tools &gt; Output Log</strong> 中查看 Dependency Tracer 消息。</p></details>
+        <details class="qa"><summary>Unreal 提示模块缺失或不兼容</summary><p>选择与引擎次版本完全匹配的压缩包，并检查是否重复安装插件。源代码包必须使用兼容的 C++ 工具链构建。不要在安装中混入其他引擎版本的 DLL。</p></details>
+      </section>
+      <section class="doc-section" id="faq" aria-labelledby="faq-title" data-search="常见问题 FAQ 自动 删除 已保存资产 磁盘 GB 节省 Cook 迁移 保证 包含 离线 互联网 运行时 编辑器 平台 演示">
+        <h2 id="faq-title">常见问题</h2>
+        <details class="qa"><summary>插件会删除或改写我的资产吗？</summary><p>未使用资产页面提供候选项和编辑器导航操作。蓝图检查会加载资产，但不会显式编译或保存。修改和清理仍需在你自己的审查流程中另行进行。</p></details>
+        <details class="qa"><summary>显示的可能回收体积能保证实际节省空间吗？</summary><p>它表示待审查候选项的已知包大小。删除任何内容前，请确认其用途。依赖关系、Cook 和压缩都会影响发布构建实际包含的内容。</p></details>
+        <details class="qa"><summary>可以将最大的根资产大小相加吗？</summary><p>多个根资产可能共享相同依赖。将含依赖大小相加会重复计算共享包；可以参考按类型汇总的总量，或测量实际构建，从另一个角度评估体积。</p></details>
+        <details class="qa"><summary>没有发现问题的审计能保证迁移成功吗？</summary><p>不能。报告审查的是当前蓝图结构和已加载状态。请在实际目标引擎中验证项目副本，并测试 C++ 代码、提供方、内容和行为。</p></details>
+        <details class="qa"><summary>是否包含迁移就绪报告？</summary><p>是。它与现有的依赖和体积工具一同包含在 Dependency Tracer 1.1.0 中。</p></details>
+        <details class="qa"><summary>打包后的游戏需要 Dependency Tracer 吗？</summary><p>插件模块仅供编辑器使用。检查界面不会在打包后的游戏中运行。</p></details>
+        <details class="qa"><summary>分析需要在线服务吗？</summary><p>项目分析在本地 Unreal Editor 中运行。CSV 和 JSON 报告写入所选的本地目录。</p></details>
+        <details class="qa"><summary>示例项目和截图属于我的扫描结果吗？</summary><p>截图展示的是专门创建的演示项目。你的扫描使用你所配置的项目资产。指南中的示例大小与发现项并不是预先插入插件的结果。</p></details>
+      </section>
+      <section class="doc-section" id="version" aria-labelledby="version-title" data-search="版本 1.1.0 NexusForgeUE 支持 联系 兼容性 5.5 5.6 5.7 5.8 Windows 更新记录">
+        <h2 id="version-title">版本与支持</h2>
+        <p>本指南适用于 <strong>Dependency Tracer 1.1.0</strong>，支持 <strong>Windows 64 位上的 Unreal Engine 5.5、5.6、5.7 和 5.8</strong>。</p>
+        <h3>1.1.0 包含的功能</h3><p>Project Atlas 界面包含依赖卡片和检查器、硬/软引用路径、未使用内容分析、根资产和资产类型体积报告、CSV/JSON 导出，以及蓝图迁移就绪报告。</p>
+        <p>已在 Win64 平台使用 UE 5.5.4、5.6.1、5.7.4 和 5.8.0 检查引擎兼容性。本版本的验证环境未验证 Mac 和 Linux 上的运行情况。</p>
+        <h3>报告问题</h3><p>联系 <a href="mailto:nexusforgeuesupport@gmail.com">nexusforgeuesupport@gmail.com</a>。</p><p>请提供 Unreal Engine 和插件版本、所选选项卡、扫描根路径和排除项、完整消息及问题复现步骤。依赖图问题请附上硬/软引用筛选条件和原尺寸截图；审计问题请附上规则 ID 和覆盖情况。</p><p>只分享报告和日志中与问题相关的部分；其中可能包含项目资产路径和名称。</p>
+      </section>
+      <footer class="page-footer"><span>Dependency Tracer 1.1.0 · NexusForgeUE</span><a href="https://www.fab.com/listings/be0472f5-6168-438f-9bc7-d650cd8481aa">Fab 上的 Dependency Tracer</a></footer>
+    </main>
+  </div>
+  <dialog id="image-viewer" class="image-viewer" aria-labelledby="image-title"><div class="image-toolbar"><span id="image-title">截图</span><button type="button" id="image-size" aria-pressed="false">原始尺寸</button><button type="button" id="image-close">关闭图片</button></div><div class="image-stage"><img id="large-image" alt=""></div></dialog>
+  <noscript><p class="noscript-note">无需 JavaScript 即可查看全部说明。请使用章节链接浏览。</p></noscript>
+</body>
+</html>
+
